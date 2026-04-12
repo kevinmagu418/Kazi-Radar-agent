@@ -1,0 +1,52 @@
+{
+  "compilerOptions": {
+    // -------------------------------
+    // Output & File Layout
+    // -------------------------------
+    "rootDir": "./src",
+    "outDir": "./dist",
+
+    // -------------------------------
+    // Module & Target Settings
+    // -------------------------------
+    "module": "nodenext",                 // Node ESM
+    "moduleResolution": "nodenext",       //  must match nodenext
+    "target": "es2022",                   // modern JS
+    "esModuleInterop": true,              // allow `import express from "express"`
+    "forceConsistentCasingInFileNames": true,
+
+    // -------------------------------
+    // Type Checking & Safety
+    // -------------------------------
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+    "skipLibCheck": true,                 // skip node_modules
+
+    // -------------------------------
+    // Source Maps & Declarations
+    // -------------------------------
+    "sourceMap": true,
+    "declaration": true,
+    "declarationMap": true,
+
+    // -------------------------------
+    // Module/ESM Compatibility
+    // -------------------------------
+    "verbatimModuleSyntax": true,
+    "isolatedModules": true,
+    "noUncheckedSideEffectImports": true,   //  correct option in TS 5.x
+
+    // -------------------------------
+    // JSX (optional)
+    // -------------------------------
+    "jsx": "react-jsx",
+
+    // -------------------------------
+    // Node.js types
+    // -------------------------------
+    "types": ["node"]
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist"]
+}
