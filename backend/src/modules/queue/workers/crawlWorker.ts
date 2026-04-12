@@ -8,8 +8,8 @@ const logger = pino({ level: "info" });
 export const crawlWorker = new Worker(
   "crawlQueue",
   async (job: Job) => {
-    logger.info(`Starting Crawl Job [${job.id}]`);
-    await discoverAndQueueSources();
+    logger.info(`Starting Crawl Job [${job.id}] with preferences: ${JSON.stringify(job.data)}`);
+    await discoverAndQueueSources(job.data);
   },
   { connection: redisConnection }
 );

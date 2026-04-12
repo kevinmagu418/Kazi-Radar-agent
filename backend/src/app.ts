@@ -8,6 +8,7 @@ import pino from "pino";
 import "./modules/queue/workers/crawlWorker.js";
 import "./modules/queue/workers/scrapeWorker.js";
 import "./modules/queue/workers/processWorker.js";
+import "./modules/queue/workers/apiFetchWorker.js";
 
 import { Source } from "./modules/models/Source.js";
 
@@ -25,13 +26,28 @@ const start = async () => {
     
     const sourceCount = await Source.countDocuments();
     if (sourceCount === 0) {
-      logger.info("Seeding initial sources...");
+      logger.info("Seeding elite sources...");
       await Source.create([
-        { url: "https://www.myjobmag.co.ke/", category: "general" },
-        { url: "https://www.brightermonday.co.ke/", category: "general" },
-        { url: "https://news.ycombinator.com/jobs", category: "tech" },
-        { url: "https://remoteok.com/", category: "remote-jobs" },
+        // Tech
+        { url: "forhire", type: "api", provider: "reddit", sourceCategory: "tech", sourceGoal: "jobs" },
+        { url: "remotejs", type: "api", provider: "reddit", sourceCategory: "tech", sourceGoal: "jobs" },
+        { url: "software development", type: "api", provider: "adzuna", sourceCategory: "tech", sourceGoal: "jobs" },
+        { url: "tech startup funding", type: "api", provider: "youtube", sourceCategory: "tech", sourceGoal: "entrepreneurial" },
+        
+        // Agriculture
+        { url: "farming", type: "api", provider: "reddit", sourceCategory: "agriculture", sourceGoal: "both" },
+        { url: "agriculture", type: "api", provider: "remotive", sourceCategory: "agriculture", sourceGoal: "jobs" },
+        { url: "agriculture grants africa", type: "api", provider: "worldbank", sourceCategory: "agriculture", sourceGoal: "entrepreneurial" },
+        
+        // Fintech
+        { url: "fintech", type: "api", provider: "reddit", sourceCategory: "fintech", sourceGoal: "both" },
+        { url: "startups", type: "api", provider: "reddit", sourceCategory: "fintech", sourceGoal: "entrepreneurial" },
+        
+        // General / Scrapers
+        { url: "https://www.ungm.org/Public/Notice", type: "scraping", provider: "scraper", sourceCategory: "general", sourceGoal: "both" },
+        { url: "https://www.myjobmag.co.ke/", type: "scraping", provider: "scraper", sourceCategory: "general", sourceGoal: "jobs" },
       ]);
+      logger.info("Seeding complete.");
     }
 
     await setupScheduler();

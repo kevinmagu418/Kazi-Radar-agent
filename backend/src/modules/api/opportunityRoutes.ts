@@ -32,11 +32,17 @@ router.get("/categories", (req, res) => {
   res.json(categories);
 });
 
-// Manual trigger for scanning
+// Manual trigger for scanning with preferences
 router.post("/scan", async (req, res) => {
   try {
-    await crawlQueue.add("manual-scan", { manual: true });
-    res.json({ message: "Scan triggered manually." });
+    const { categories, goals } = req.body;
+    const preferences = { categories, goals };
+    logger.info(`🚀 Starting Crawler Discovery with preferences: ${JSON.stringify(preferences)}`);
+    await crawlQueue.add("manual-scan", { 
+      categories: categories || [], 
+      goals: goals || [] 
+    });
+    res.json({ message: "Scan triggered with preferences.", categories, goals });
   } catch (err) {
     logger.error(`❌ Error triggering scan: ${err}`);
     res.status(500).json({ error: "Failed to trigger scan." });
@@ -45,9 +51,16 @@ router.post("/scan", async (req, res) => {
 
 // Add a source (utility)
 router.post("/sources", async (req, res) => {
-  const { url, category } = req.body;
+  const { url, sourceCategory, type, provider, sourceGoal, metadata } = req.body;
   try {
-    const source = await Source.create({ url, category });
+    const source = await Source.create({ 
+      url, 
+      sourceCategory: sourceCategory || "general",
+      type: type || "scraping",
+      provider: provider || "scraper",
+      sourceGoal: sourceGoal || "both",
+      metadata: metadata || {}
+    });
     res.status(201).json(source);
   } catch (err) {
     logger.error(`❌ Error adding source: ${err}`);

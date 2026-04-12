@@ -15,6 +15,7 @@ const queueOptions = {
 };
 
 export const crawlQueue = new Queue("crawlQueue", queueOptions);
+export const apiFetchQueue = new Queue("apiFetchQueue", queueOptions);
 export const scrapeQueue = new Queue("scrapeQueue", queueOptions);
 export const processQueue = new Queue("processQueue", queueOptions);
 

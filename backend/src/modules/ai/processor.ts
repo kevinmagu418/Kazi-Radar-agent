@@ -1,6 +1,7 @@
 import { ChatGroq } from "@langchain/groq";
 import { PromptTemplate } from "@langchain/core/prompts";
 import { JsonOutputParser } from "@langchain/core/output_parsers";
+import { RunnableSequence } from "@langchain/core/runnables";
 import dotenv from "dotenv";
 import pino from "pino";
 
@@ -15,44 +16,63 @@ if (!GROQ_API_KEY) {
 }
 
 const model = new ChatGroq({
-  apiKey: GROQ_API_KEY,
-  modelName: "llama3-70b-8192",
+  apiKey: GROQ_API_KEY as string,
+  model: "llama3-70b-8192",
   temperature: 0,
 });
 
 const parser = new JsonOutputParser();
 
 const promptTemplate = PromptTemplate.fromTemplate(
-  `You are an expert AI assistant specializing in identifying opportunities from raw web text.
+  `You are an expert AI assistant specializing in identifying opportunities from raw data.
   Extract all opportunities found in the text provided below.
 
-  Categories can be: tech, fintech, agriculture, grants, remote-jobs, general.
-  Types can be: job, internship, grant, gig, volunteer.
+  Categories can be: tech, fintech, agriculture, grants, general.
+  Types can be: job, internship, grant, gig, volunteer, entrepreneurial-signal.
 
   For each opportunity, extract:
   - title (string)
   - category (string)
   - type (string)
   - location (string)
-  - relevanceScore (number between 1-100, based on how clear and valuable the opportunity is)
+  - relevanceScore (number between 1-100)
+  - proofLinks (array of strings, extract URLs that verify this opportunity)
 
   Output MUST be a JSON array of objects.
 
-  Raw Text Content:
+  Raw Data:
   {text}
 
   Output JSON:`
 );
 
-export const extractOpportunities = async (text: string) => {
+export const extractOpportunities = async (data: any) => {
   try {
-    // Limit text to avoid token limits (llama3-70b has 8k, but let's be safe)
-    const truncatedText = text.slice(0, 15000); 
+    let textToProcess = "";
+
+    if (typeof data === "string") {
+      textToProcess = data;
+    } else if (typeof data === "object") {
+      // Summarize structured data for AI
+      textToProcess = `
+        Source: ${data.provider || "Unknown"}
+        Title: ${data.title || "Unknown"}
+        Content: ${data.text || JSON.stringify(data)}
+        Links Found: ${data.proofLinks?.join(", ") || ""}
+      `;
+    }
+
+    const truncatedText = textToProcess.slice(0, 15000); 
     
-    const chain = promptTemplate.pipe(model).pipe(parser);
+    const chain = RunnableSequence.from([
+      promptTemplate,
+      model,
+      parser
+    ]);
+    
     const result = await chain.invoke({ text: truncatedText });
     
-    return result;
+    return result as any[];
   } catch (error) {
     logger.error(`❌ AI Processing Error: ${error}`);
     return [];

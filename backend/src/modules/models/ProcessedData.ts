@@ -7,6 +7,9 @@ export interface IProcessedData extends Document {
   location: string;
   relevanceScore: number;
   url: string;
+  proofLinks: string[];
+  providerName: string;
+  originalUrl: string;
   scrapedAt: Date;
   processedAt: Date;
 }
@@ -18,6 +21,9 @@ const ProcessedDataSchema: Schema = new Schema({
   location: { type: String },
   relevanceScore: { type: Number, default: 0 },
   url: { type: String, required: true },
+  proofLinks: [{ type: String }],
+  providerName: { type: String },
+  originalUrl: { type: String },
   scrapedAt: { type: Date, required: true },
   processedAt: { type: Date, default: Date.now },
 });

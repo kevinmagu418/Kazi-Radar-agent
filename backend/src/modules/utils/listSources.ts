@@ -11,7 +11,7 @@ async function listSources() {
     await mongoose.connect(MONGO_URI);
     const sources = await Source.find();
     console.log("Current Sources:");
-    sources.forEach(s => console.log(`- ${s.url} (${s.category})`));
+    sources.forEach(s => console.log(`- ${s.url} (${s.sourceCategory})`));
     process.exit(0);
   } catch (err) {
     console.error(err);

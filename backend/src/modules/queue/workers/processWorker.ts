@@ -22,7 +22,7 @@ export const processWorker = new Worker(
       for (const record of rawRecords) {
         logger.info(`Processing RawData: ${record.title} (${record.url})`);
 
-        const opportunities = await extractOpportunities(record.rawContent.text);
+        const opportunities = await extractOpportunities(record.rawContent);
 
         if (Array.isArray(opportunities) && opportunities.length > 0) {
           logger.info(`Extracted ${opportunities.length} opportunities from ${record.url}`);
@@ -34,7 +34,10 @@ export const processWorker = new Worker(
               type: opt.type,
               location: opt.location,
               relevanceScore: opt.relevanceScore,
-              url: record.url,
+              proofLinks: opt.proofLinks || [record.url],
+              providerName: record.rawContent.provider || "Web Scraper",
+              originalUrl: record.url,
+              url: opt.url || record.url,
               scrapedAt: record.scrapedAt,
             });
           }
