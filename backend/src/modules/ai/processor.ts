@@ -12,7 +12,7 @@ const logger = pino({ level: "info" });
 const GROQ_API_KEY = process.env.GROQ_API_KEY;
 
 if (!GROQ_API_KEY) {
-  logger.error("❌ GROQ_API_KEY is missing from environment variables.");
+  logger.error("GROQ_API_KEY is missing from environment variables.");
 }
 
 const model = new ChatGroq({
@@ -74,7 +74,7 @@ export const extractOpportunities = async (data: any) => {
     
     return result as any[];
   } catch (error) {
-    logger.error(`❌ AI Processing Error: ${error}`);
+    logger.error(`AI Processing Error: ${error}`);
     return [];
   }
 };

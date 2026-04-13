@@ -20,13 +20,13 @@ export const processWorker = new Worker(
       }
 
       for (const record of rawRecords) {
-        logger.info(`Processing RawData: ${record.title} (${record.url})`);
-
+        logger.info(`[ProcessWorker] Processing Job ${job.id} for RawData: ${record._id}`);
+    
+        logger.info(`[ProcessWorker] Sending to AI Processor: ${record.title}`);
         const opportunities = await extractOpportunities(record.rawContent);
+        logger.info(`[ProcessWorker] AI extracted ${opportunities.length} opportunities`);
 
         if (Array.isArray(opportunities) && opportunities.length > 0) {
-          logger.info(`Extracted ${opportunities.length} opportunities from ${record.url}`);
-          
           for (const opt of opportunities) {
             await ProcessedData.create({
               title: opt.title || "Untitled Opportunity",

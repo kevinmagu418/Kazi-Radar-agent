@@ -4,12 +4,47 @@ import { Source } from "../models/Source.js";
 import { crawlQueue } from "../queue/index.js";
 import pino from "pino";
 
+import mongoose from "mongoose";
+import { redisConnection } from "../config/redis.js";
+import { RawData } from "../models/RawData.js";
+
 const router = express.Router();
 const logger = pino({ level: "info" });
 
 // Health check
 router.get("/health", (req, res) => {
   res.json({ status: "ok", timestamp: new Date() });
+});
+
+// Detailed status
+router.get("/status", async (req, res) => {
+  const dbStatus = mongoose.connection.readyState === 1 ? "connected" : "disconnected";
+  const redisStatus = redisConnection.status === "ready" ? "connected" : "disconnected";
+  
+  res.json({
+    services: {
+      mongodb: dbStatus,
+      redis: redisStatus,
+    },
+    timestamp: new Date()
+  });
+});
+
+// Stats overview
+router.get("/stats", async (req, res) => {
+  try {
+    const totalSources = await Source.countDocuments();
+    const activeSources = await Source.countDocuments({ active: true });
+    const rawCount = await RawData.countDocuments();
+    const processedCount = await ProcessedData.countDocuments();
+    
+    res.json({
+      sources: { total: totalSources, active: activeSources },
+      data: { raw: rawCount, processed: processedCount }
+    });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch stats" });
+  }
 });
 
 // Fetch all opportunities
@@ -21,7 +56,7 @@ router.get("/opportunities", async (req, res) => {
     const opportunities = await ProcessedData.find(filter).sort({ processedAt: -1 });
     res.json(opportunities);
   } catch (err) {
-    logger.error(`❌ Error fetching opportunities: ${err}`);
+    logger.error(`Error fetching opportunities: ${err}`);
     res.status(500).json({ error: "Server error" });
   }
 });
@@ -37,14 +72,14 @@ router.post("/scan", async (req, res) => {
   try {
     const { categories, goals } = req.body;
     const preferences = { categories, goals };
-    logger.info(`🚀 Starting Crawler Discovery with preferences: ${JSON.stringify(preferences)}`);
+    logger.info(`Starting Crawler Discovery with preferences: ${JSON.stringify(preferences)}`);
     await crawlQueue.add("manual-scan", { 
       categories: categories || [], 
       goals: goals || [] 
     });
     res.json({ message: "Scan triggered with preferences.", categories, goals });
   } catch (err) {
-    logger.error(`❌ Error triggering scan: ${err}`);
+    logger.error(`Error triggering scan: ${err}`);
     res.status(500).json({ error: "Failed to trigger scan." });
   }
 });
@@ -63,7 +98,7 @@ router.post("/sources", async (req, res) => {
     });
     res.status(201).json(source);
   } catch (err) {
-    logger.error(`❌ Error adding source: ${err}`);
+    logger.error(`Error adding source: ${err}`);
     res.status(400).json({ error: "Failed to add source (maybe duplicate url?)" });
   }
 });

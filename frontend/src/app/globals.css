@@ -1,0 +1,66 @@
+@import "tailwindcss";
+
+:root {
+  --background: #050b15;
+  --foreground: #f8fafc;
+  --primary: #10b981; /* Emerald */
+  --secondary: #f59e0b; /* Fintech Gold */
+  --accent: #3b82f6; /* Tech Blue */
+  --card-bg: rgba(15, 23, 42, 0.6);
+  --card-border: rgba(255, 255, 255, 0.1);
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+  font-family: 'Outfit', sans-serif;
+  background-color: var(--background);
+  color: var(--foreground);
+}
+
+/* Glassmorphism utility */
+.glass {
+  background: var(--card-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--card-border);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+
+.radar-pulse {
+  position: relative;
+}
+
+.radar-pulse::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 1px solid var(--primary);
+  animation: pulse 2s infinite ease-out;
+  opacity: 0;
+}
+
+@keyframes pulse {
+  0% {
+    width: 0%;
+    height: 0%;
+    opacity: 0.5;
+  }
+  100% {
+    width: 150%;
+    height: 150%;
+    opacity: 0;
+  }
+}

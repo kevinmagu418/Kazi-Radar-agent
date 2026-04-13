@@ -10,7 +10,7 @@ export interface ScanPreferences {
 }
 
 export const discoverAndQueueSources = async (preferences: ScanPreferences = {}) => {
-  logger.info(`🚀 Starting Crawler Discovery with preferences: ${JSON.stringify(preferences)}`);
+  logger.info(`Starting Crawler Discovery with preferences: ${JSON.stringify(preferences)}`);
   
   try {
     const query: any = { active: true };
@@ -28,7 +28,7 @@ export const discoverAndQueueSources = async (preferences: ScanPreferences = {})
     const activeSources = await Source.find(query);
     
     if (activeSources.length === 0) {
-      logger.info("⚠️ No matching active sources found to crawl.");
+      logger.info("No matching active sources found to crawl.");
       return;
     }
 
@@ -57,9 +57,9 @@ export const discoverAndQueueSources = async (preferences: ScanPreferences = {})
       source.lastCrawledAt = new Date();
       await source.save();
     }
-    logger.info(`✅ Successfully queued ${activeSources.length} sources.`);
+    logger.info(`Successfully queued ${activeSources.length} sources.`);
   } catch (err) {
-    logger.error(`❌ Crawler error: ${err}`);
+    logger.error(`Crawler error: ${err}`);
     throw err;
   }
 };

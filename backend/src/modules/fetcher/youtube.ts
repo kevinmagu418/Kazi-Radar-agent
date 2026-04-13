@@ -6,7 +6,7 @@ const logger = pino({ level: "info" });
 export const youtubeFetcher = async (query: string, metadata: any) => {
   const API_KEY = process.env.YOUTUBE_API_KEY;
   if (!API_KEY) {
-    logger.error("❌ YOUTUBE_API_KEY is missing.");
+    logger.error("YOUTUBE_API_KEY is missing.");
     return [];
   }
 

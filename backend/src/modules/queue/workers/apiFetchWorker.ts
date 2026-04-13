@@ -11,12 +11,13 @@ export const apiFetchWorker = new Worker(
   "apiFetchQueue",
   async (job) => {
     const { provider, query, metadata, category, sourceId } = job.data;
-    logger.info(`Processing API fetch job for ${provider}: ${query}`);
+    logger.info(`[ApiFetchWorker] Starting job ${job.id} for ${provider}: ${query}`);
 
     try {
       const results = await fetchFromApi(provider, query, metadata);
 
       if (results && results.length > 0) {
+        let savedCount = 0;
         for (const item of results) {
           try {
             await RawData.findOneAndUpdate(
@@ -35,13 +36,14 @@ export const apiFetchWorker = new Worker(
               },
               { upsert: true, new: true }
             );
+            savedCount++;
           } catch (err) {
-            logger.error(`Error saving raw data for ${item.url}: ${err}`);
+            logger.error(`[ApiFetchWorker] Error saving raw data for ${item.url}: ${err}`);
           }
         }
-        logger.info(`Successfully fetched and saved ${results.length} items from ${provider}`);
+        logger.info(`[ApiFetchWorker] Successfully fetched and saved ${savedCount} items from ${provider}`);
       } else {
-        logger.info(`No results found for ${provider} with query: ${query}`);
+        logger.info(`[ApiFetchWorker] No results found for ${provider} with query: ${query}`);
       }
     } catch (error) {
       logger.error(`API Fetch Worker Error (${provider}): ${error}`);

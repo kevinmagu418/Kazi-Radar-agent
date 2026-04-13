@@ -1,5 +1,4 @@
 import { youtubeFetcher } from "./youtube.js";
-import { redditFetcher } from "./reddit.js";
 import { jobApisFetcher } from "./jobApis.js";
 import { worldbankFetcher } from "./worldbank.js";
 import pino from "pino";
@@ -12,8 +11,6 @@ export const fetchFromApi = async (provider: string, query: string, metadata: an
   switch (provider) {
     case "youtube":
       return await youtubeFetcher(query, metadata);
-    case "reddit":
-      return await redditFetcher(query, metadata);
     case "adzuna":
     case "remotive":
       return await jobApisFetcher(provider, query, metadata);

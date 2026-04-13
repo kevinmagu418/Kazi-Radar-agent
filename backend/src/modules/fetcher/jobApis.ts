@@ -16,7 +16,7 @@ const fetchAdzuna = async (query: string, metadata: any) => {
   const APP_ID = process.env.ADZUNA_APP_ID;
   const APP_KEY = process.env.ADZUNA_APP_KEY;
   if (!APP_ID || !APP_KEY) {
-    logger.error("❌ Adzuna credentials missing.");
+    logger.error(" Adzuna credentials missing.");
     return [];
   }
 
