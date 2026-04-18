@@ -42,6 +42,9 @@ createBullBoard({
 
 app.use(express.json());
 app.use("/admin/queues", serverAdapter.getRouter());
+app.get("/api/health", (req, res) => {
+  res.json({ status: "ok" });
+});
 app.use("/api", opportunityRoutes);
 
 const start = async () => {

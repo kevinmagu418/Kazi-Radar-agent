@@ -1,27 +1,23 @@
-import type { Metadata } from "next";
-import { Outfit } from "next/font/google";
-import "./globals.css";
+import type { Metadata } from 'next';
+import type { ReactNode } from 'react';
+import { Poppins } from 'next/font/google';
+import './globals.css';
 
-const outfit = Outfit({
-  variable: "--font-outfit",
-  subsets: ["latin"],
+const poppins = Poppins({
+  variable: '--font-poppins',
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
 });
 
 export const metadata: Metadata = {
-  title: "KaziRadar | Global Opportunity Intelligence",
-  description: "Elite AI-powered scanner for Tech, Agriculture, and Fintech opportunities.",
+  title: 'Opportunity Scanner Dashboard',
+  description: 'Modern opportunity intelligence workspace for jobs, grants, and entrepreneurial signals.',
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   return (
-    <html lang="en" className={`${outfit.variable} antialiased dark`}>
-      <body className="bg-[#050b15] selection:bg-emerald-500/30">
-        {children}
-      </body>
+    <html lang="en" className={poppins.variable}>
+      <body className="app-shell">{children}</body>
     </html>
   );
 }
