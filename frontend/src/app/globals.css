@@ -2,135 +2,61 @@
 
 @theme {
   --font-sans: var(--font-poppins);
-}
-
-:root {
-  --background: #0f0f14;
-  --primary: #ff4d8d;
-  --primary-glow: #ff8fb1;
-  --foreground: #f8f9fa;
-  --muted: #a1a1aa;
-  --surface: #15151d;
-  --surface-strong: #1b1b25;
-  --surface-soft: #20202b;
-  --border: rgba(248, 249, 250, 0.08);
-  --border-strong: rgba(255, 143, 177, 0.22);
-  --ring: rgba(255, 77, 141, 0.38);
-  --shadow: 0 24px 80px rgba(0, 0, 0, 0.32);
-}
-
-* {
-  box-sizing: border-box;
-}
-
-html {
-  scroll-behavior: smooth;
-}
-
-body {
-  min-height: 100vh;
-  margin: 0;
-  background:
-    radial-gradient(circle at top left, rgba(255, 77, 141, 0.16), transparent 24%),
-    radial-gradient(circle at top right, rgba(255, 143, 177, 0.1), transparent 22%),
-    linear-gradient(180deg, #11111a 0%, #0f0f14 100%);
-  color: var(--foreground);
-  font-family: var(--font-poppins), system-ui, sans-serif;
-  -webkit-font-smoothing: antialiased;
-}
-
-a {
-  color: inherit;
-  text-decoration: none;
-}
-
-button,
-input,
-select,
-textarea {
-  font: inherit;
-}
-
-:focus-visible {
-  outline: 2px solid var(--primary);
-  outline-offset: 2px;
-}
-
-::selection {
-  background: rgba(255, 77, 141, 0.28);
-  color: var(--foreground);
+  
+  --color-background: #0F0F14;
+  --color-primary: #FF4D8D;
+  --color-primary-glow: #FF8FB1;
+  --color-foreground: #F8F9FA;
+  --color-muted: #A1A1AA;
+  
+  --color-surface: #15151D;
+  --color-surface-hover: #1B1B25;
+  --color-border: rgba(248, 249, 250, 0.06);
+  
+  --radius-2xl: 1.5rem;
+  --radius-3xl: 2.5rem;
+  --radius-pill: 9999px;
 }
 
 @layer base {
   body {
-    @apply text-base leading-relaxed;
+    @apply bg-background text-foreground font-sans leading-relaxed antialiased;
   }
 }
 
 @layer utilities {
-  .app-shell {
-    @apply min-h-screen bg-transparent text-[color:var(--foreground)];
+  .glow-soft {
+    box-shadow: 0 0 30px rgba(255, 77, 141, 0.15);
+  }
+  
+  .glass-pill {
+    @apply bg-surface/80 backdrop-blur-xl border border-border rounded-pill;
   }
 
-  .dashboard-bg {
-    background:
-      radial-gradient(circle at top, rgba(255, 77, 141, 0.12), transparent 30%),
-      linear-gradient(180deg, rgba(255, 255, 255, 0.02), transparent 20%),
-      var(--background);
+  .glass-card-soft {
+    @apply bg-surface/40 backdrop-blur-md border border-border rounded-[2rem];
   }
 
-  .surface-panel {
-    background: rgba(21, 21, 29, 0.9);
-    border: 1px solid var(--border);
-    box-shadow: var(--shadow);
-    backdrop-filter: blur(18px);
-  }
-
-  .surface-soft {
-    background: rgba(27, 27, 37, 0.92);
-    border: 1px solid var(--border);
-  }
-
-  .text-muted {
-    color: var(--muted);
-  }
-
-  .text-foreground {
-    color: var(--foreground);
-  }
-
-  .fade-in {
-    animation: fade-in 320ms ease-out;
-  }
-
-  .glow-border {
-    box-shadow: inset 0 0 0 1px var(--border-strong);
+  .animate-pulse-slow {
+    animation: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   }
 }
 
-@keyframes fade-in {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.7; transform: scale(0.98); }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
-  }
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
 
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
-  }
+.float {
+  animation: float 6s ease-in-out infinite;
+}
+
+:root {
+  --background: #0F0F14;
+  --foreground: #F8F9FA;
 }

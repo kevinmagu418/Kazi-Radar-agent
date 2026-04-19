@@ -1,145 +1,206 @@
+'use client';
+
 import Link from 'next/link';
-import { ArrowRight, BellRing, BriefcaseBusiness, Radar, SearchCheck, Sparkles } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { 
+  ArrowRight, 
+  Bot,
+  Sparkles, 
+  Target,
+  Zap,
+  Globe,
+  Heart,
+  Search,
+  CheckCircle2,
+  Compass
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 
-const featureCards = [
+const features = [
   {
-    title: 'Unified signal intake',
-    description: 'Jobs, grants, and venture opportunities land in one review surface with consistent metadata.',
-    icon: Radar,
+    title: 'Always Searching',
+    description: 'While you sleep, your Scout is scouring the web for new opportunities that match your specific interests.',
+    icon: Search,
+    color: 'text-primary'
   },
   {
-    title: 'Evidence-aware review',
-    description: 'Inspect source links, relevance score, and provider context without leaving the main flow.',
-    icon: SearchCheck,
+    title: 'Smart Matching',
+    description: 'We don\'t just show everything. Our AI understands what you\'re looking for and only shows the best matches.',
+    icon: Target,
+    color: 'text-blue-400'
   },
   {
-    title: 'Fast operator controls',
-    description: 'Trigger new scans, monitor feed health, and manage filtering from a premium SaaS workspace.',
-    icon: BellRing,
+    title: 'Simple & Calm',
+    description: 'No complex dashboards or confusing charts. Just a clean feed of things you\'ll actually care about.',
+    icon: Sparkles,
+    color: 'text-amber-400'
   },
-];
-
-const stats = [
-  { label: 'Coverage', value: 'Jobs, grants, founder leads' },
-  { label: 'Review model', value: 'Score + proof link workflow' },
-  { label: 'Operator control', value: 'Manual scan execution' },
 ];
 
 export default function LandingPage() {
   return (
-    <main className="dashboard-bg min-h-screen px-4 py-6 lg:px-6">
-      <div className="mx-auto flex min-h-[calc(100vh-3rem)] max-w-7xl flex-col gap-6">
-        <header className="surface-panel fade-in flex flex-col gap-4 rounded-[2rem] p-6 lg:flex-row lg:items-center lg:justify-between">
-          <div className="flex items-center gap-4">
-            <div className="flex h-14 w-14 items-center justify-center rounded-[1.25rem] bg-[linear-gradient(135deg,var(--primary),var(--primary-glow))] text-lg font-semibold text-[#0f0f14]">
-              OS
-            </div>
-            <div>
-              <p className="text-lg font-semibold text-[color:var(--foreground)]">Opportunity Scanner</p>
-              <p className="text-sm text-[color:var(--muted)]">Modern intelligence workspace</p>
-            </div>
-          </div>
+    <div className="relative min-h-screen overflow-hidden bg-background selection:bg-primary/30">
+      {/* Background Ambience */}
+      <div className="pointer-events-none fixed inset-0 overflow-hidden">
+        <div className="absolute top-[-10%] left-[-10%] h-[50%] w-[50%] rounded-full bg-primary/10 blur-[120px]" />
+        <div className="absolute bottom-[-10%] right-[-10%] h-[50%] w-[50%] rounded-full bg-primary/10 blur-[120px]" />
+      </div>
 
-          <div className="flex flex-wrap items-center gap-3">
-            <Badge tone="primary">Dark SaaS UI</Badge>
+      <header className="relative z-10 mx-auto max-w-7xl px-6 py-10">
+        <nav className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="relative h-11 w-11 overflow-hidden rounded-full border border-white/10 shadow-xl shadow-primary/20">
+              <img 
+                src="/applogo.png" 
+                alt="Kaziradar Logo" 
+                className="h-full w-full object-cover"
+              />
+            </div>
+            <span className="text-2xl font-bold tracking-tight text-foreground">Kaziradar</span>
+          </div>
+          <div className="flex items-center gap-8">
+            <Link href="/dashboard" className="hidden text-sm font-semibold text-muted hover:text-foreground transition-colors sm:block">
+              Sign In
+            </Link>
             <Link href="/dashboard">
-              <Button>
-                Open dashboard
-                <ArrowRight className="h-4 w-4" />
+              <Button size="md" className="shadow-xl">
+                Get Started
               </Button>
             </Link>
           </div>
-        </header>
+        </nav>
+      </header>
 
-        <section className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
-          <Card className="fade-in rounded-[2rem] p-6 lg:p-8">
-            <div className="max-w-3xl space-y-6">
-              <Badge tone="primary">Opportunity Intelligence</Badge>
-              <div className="space-y-4">
-                <h1 className="text-2xl font-semibold leading-relaxed text-[color:var(--foreground)] lg:text-[2rem]">
-                  A calmer dashboard for reviewing signals, running scans, and keeping sourcing operations visible.
-                </h1>
-                <p className="text-base leading-relaxed text-[color:var(--muted)]">
-                  The frontend is now structured like a premium product workspace: stronger hierarchy, cleaner density, and a
-                  layout built for continuous review instead of one-off browsing.
-                </p>
-              </div>
-
-              <div className="flex flex-wrap gap-3">
-                <Link href="/dashboard">
-                  <Button>
-                    Launch workspace
-                    <ArrowRight className="h-4 w-4" />
-                  </Button>
-                </Link>
-                <Button variant="ghost">Premium dark system</Button>
+      <main className="relative z-10 px-6">
+        {/* Hero Section */}
+        <section className="mx-auto max-w-7xl py-20 text-center lg:py-32">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+            className="space-y-10"
+          >
+            <div className="flex justify-center">
+              <Badge tone="primary" className="px-6 py-2 rounded-full text-xs font-bold uppercase tracking-widest bg-primary/10 border-primary/20">
+                Meet your new AI companion
+              </Badge>
+            </div>
+            <h1 className="mx-auto max-w-4xl text-5xl font-bold tracking-tight text-foreground sm:text-7xl lg:text-8xl leading-[1.1]">
+              Find your next <span className="text-primary italic">big thing</span> without the search.
+            </h1>
+            <p className="mx-auto max-w-2xl text-xl leading-relaxed text-muted/80">
+              Meet Kaziradar—your personal AI agent that discovers jobs, grants, and projects across the entire web, so you don't have to.
+            </p>
+            <div className="flex flex-col items-center justify-center gap-6 sm:flex-row pt-4">
+              <Link href="/dashboard">
+                <Button size="lg" className="h-16 px-10 text-lg shadow-2xl shadow-primary/30">
+                  Try Kaziradar for Free
+                  <ArrowRight className="h-5 w-5" />
+                </Button>
+              </Link>
+              <div className="flex items-center gap-3 px-6 py-4 glass-pill text-sm font-medium">
+                <div className="flex -space-x-2">
+                  {[1, 2, 3].map(i => (
+                    <div key={i} className="h-6 w-6 rounded-full border-2 border-background bg-surface-hover" />
+                  ))}
+                </div>
+                <span>Used by 2,000+ happy humans</span>
               </div>
             </div>
-          </Card>
+          </motion.div>
+        </section>
 
-          <Card className="fade-in rounded-[2rem] p-6">
-            <div className="space-y-6">
-              <div className="flex items-center gap-3">
-                <div className="rounded-2xl bg-[rgba(255,77,141,0.18)] p-3 text-[color:var(--primary-glow)]">
-                  <BriefcaseBusiness className="h-5 w-5" />
-                </div>
-                <div>
-                  <h2 className="text-lg font-semibold text-[color:var(--foreground)]">Platform snapshot</h2>
-                  <p className="text-sm text-[color:var(--muted)]">Built around the current data flow and scan workflow.</p>
-                </div>
-              </div>
-
-              <div className="space-y-3">
-                {stats.map((stat) => (
-                  <div key={stat.label} className="surface-soft rounded-[1.5rem] p-4">
-                    <p className="text-sm text-[color:var(--muted)]">{stat.label}</p>
-                    <p className="mt-2 text-base font-medium text-[color:var(--foreground)]">{stat.value}</p>
+        {/* Features Section */}
+        <section className="mx-auto max-w-7xl py-32">
+          <div className="grid gap-8 md:grid-cols-3">
+            {features.map((feature, idx) => (
+              <motion.div
+                key={feature.title}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: idx * 0.1, duration: 0.5 }}
+              >
+                <Card className="h-full group hover:bg-surface/60 transition-all duration-500 rounded-[2.5rem] p-10">
+                  <div className={`mb-8 inline-flex rounded-3xl bg-surface p-4 group-hover:scale-110 transition-transform duration-500 ${feature.color}`}>
+                    <feature.icon className="h-8 w-8" />
                   </div>
-                ))}
+                  <h3 className="text-2xl font-bold mb-4 tracking-tight">{feature.title}</h3>
+                  <p className="text-lg leading-relaxed text-muted/70">
+                    {feature.description}
+                  </p>
+                </Card>
+              </motion.div>
+            ))}
+          </div>
+        </section>
+
+        {/* Human Centered Quote */}
+        <section className="mx-auto max-w-4xl py-32 text-center">
+          <div className="relative">
+            <div className="absolute -top-12 left-1/2 -translate-x-1/2 opacity-10">
+              <Sparkles className="h-24 w-24 text-primary" />
+            </div>
+            <h2 className="text-3xl font-bold italic text-foreground/90 sm:text-4xl md:text-5xl leading-tight">
+              "It's like having a super-smart friend who spends all day looking for things you'll love."
+            </h2>
+            <div className="mt-12 flex flex-col items-center gap-4">
+              <div className="h-14 w-14 rounded-full bg-primary/20 flex items-center justify-center">
+                <Heart className="h-6 w-6 text-primary fill-primary" />
+              </div>
+              <div>
+                <p className="text-lg font-bold">Sarah Jenkins</p>
+                <p className="text-sm text-muted">Creative Freelancer</p>
               </div>
             </div>
-          </Card>
+          </div>
         </section>
 
-        <section className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-          {featureCards.map(({ title, description, icon: Icon }) => (
-            <Card key={title} className="fade-in rounded-[2rem]">
-              <div className="mb-4 inline-flex rounded-2xl bg-[rgba(255,77,141,0.16)] p-3 text-[color:var(--primary-glow)]">
-                <Icon className="h-5 w-5" />
-              </div>
-              <h2 className="text-lg font-semibold text-[color:var(--foreground)]">{title}</h2>
-              <p className="mt-3 text-sm leading-relaxed text-[color:var(--muted)]">{description}</p>
-            </Card>
-          ))}
-        </section>
-
-        <section className="grid gap-6 lg:grid-cols-[0.85fr_1.15fr]">
-          <Card className="fade-in rounded-[2rem]">
-            <div className="space-y-4">
-              <Badge tone="default">Why this refactor</Badge>
-              <h2 className="text-xl font-semibold text-[color:var(--foreground)]">Designed for daily dashboard use</h2>
-              <p className="text-sm leading-relaxed text-[color:var(--muted)]">
-                The visual system now standardizes surface treatment, spacing, typography, and interaction states so new routes
-                can reuse the same shell without design drift.
+        {/* Final CTA */}
+        <section className="mx-auto max-w-7xl py-32">
+          <div className="relative overflow-hidden rounded-[3rem] bg-primary p-12 md:p-24 text-center shadow-[0_40px_100px_rgba(255,77,141,0.2)]">
+            <div className="relative z-10 space-y-10">
+              <h2 className="mx-auto max-w-3xl text-4xl font-bold tracking-tight text-background sm:text-6xl">
+                Ready to find your next opportunity?
+              </h2>
+              <p className="mx-auto max-w-xl text-xl font-medium text-background/80">
+                It takes less than a minute to set up your AI agent. No credit card required.
               </p>
+              <Link href="/dashboard" className="inline-block pt-4">
+                <Button variant="ghost" className="h-16 bg-background text-primary hover:bg-background/90 px-12 text-xl font-bold shadow-2xl">
+                  Start your search now
+                </Button>
+              </Link>
             </div>
-          </Card>
-
-          <Card className="fade-in rounded-[2rem]">
-            <div className="grid gap-4 md:grid-cols-3">
-              {['Dashboard shell', 'Reusable cards and table', 'Responsive controls'].map((item) => (
-                <div key={item} className="surface-soft rounded-[1.5rem] p-4">
-                  <Sparkles className="h-5 w-5 text-[color:var(--primary-glow)]" />
-                  <p className="mt-4 text-base font-medium text-[color:var(--foreground)]">{item}</p>
-                </div>
-              ))}
+            
+            {/* Background Pattern */}
+            <div className="absolute inset-0 opacity-20 pointer-events-none">
+              <div className="h-full w-full bg-[radial-gradient(circle_at_20%_30%,white,transparent_40%),radial-gradient(circle_at_80%_70%,white,transparent_40%)]" />
             </div>
-          </Card>
+          </div>
         </section>
-      </div>
-    </main>
+      </main>
+
+      <footer className="mx-auto max-w-7xl px-6 py-20">
+        <div className="flex flex-col items-center justify-between gap-10 md:flex-row pt-10 border-t border-white/5">
+          <div className="flex items-center gap-3">
+            <div className="h-8 w-8 overflow-hidden rounded-full border border-white/10">
+              <img src="/applogo.png" alt="Kaziradar Logo" className="h-full w-full object-cover" />
+            </div>
+            <span className="text-xl font-bold">Kaziradar</span>
+          </div>
+          <div className="flex gap-12 text-sm font-semibold text-muted">
+            <a href="#" className="hover:text-primary transition-colors">Privacy</a>
+            <a href="#" className="hover:text-primary transition-colors">Terms</a>
+            <a href="#" className="hover:text-primary transition-colors">Support</a>
+          </div>
+          <p className="text-sm text-muted/50">
+            &copy; 2026 Kaziradar AI Discovery. Made with love for humans.
+          </p>
+        </div>
+      </footer>
+    </div>
   );
 }

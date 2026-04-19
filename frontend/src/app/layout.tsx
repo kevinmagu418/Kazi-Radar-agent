@@ -10,8 +10,11 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: 'Opportunity Scanner Dashboard',
-  description: 'Modern opportunity intelligence workspace for jobs, grants, and entrepreneurial signals.',
+  title: 'Kaziradar',
+  description: 'Your personal AI scout for discovering jobs, grants, and entrepreneurial opportunities.',
+  icons: {
+    icon: '/applogo.png',
+  },
 };
 
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {

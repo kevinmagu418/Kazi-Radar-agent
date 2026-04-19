@@ -17,7 +17,7 @@ if (!GROQ_API_KEY) {
 
 const model = new ChatGroq({
   apiKey: GROQ_API_KEY as string,
-  model: "llama3-70b-8192",
+  model: "llama-3.3-70b-versatile",
   temperature: 0,
 });
 

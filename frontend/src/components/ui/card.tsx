@@ -5,10 +5,26 @@ export function Card({ className, ...props }: ComponentPropsWithoutRef<'div'>) {
   return (
     <div
       className={cn(
-        'surface-panel rounded-[1.5rem] p-6 transition-all duration-200 hover:scale-[1.01]',
+        'glass-card-soft p-6 transition-all duration-300 hover:bg-surface/60',
         className,
       )}
       {...props}
     />
   );
+}
+
+export function CardHeader({ className, ...props }: ComponentPropsWithoutRef<'div'>) {
+  return <div className={cn('mb-5 space-y-2', className)} {...props} />;
+}
+
+export function CardTitle({ className, ...props }: ComponentPropsWithoutRef<'h3'>) {
+  return <h3 className={cn('text-xl font-bold leading-tight tracking-tight', className)} {...props} />;
+}
+
+export function CardDescription({ className, ...props }: ComponentPropsWithoutRef<'p'>) {
+  return <p className={cn('text-sm text-muted/80 leading-relaxed', className)} {...props} />;
+}
+
+export function CardContent({ className, ...props }: ComponentPropsWithoutRef<'div'>) {
+  return <div className={cn('', className)} {...props} />;
 }

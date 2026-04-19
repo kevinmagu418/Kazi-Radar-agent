@@ -6,7 +6,7 @@ export function Input({ className, ...props }: InputHTMLAttributes<HTMLInputElem
   return (
     <input
       className={cn(
-        'w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-[color:var(--foreground)] placeholder:text-[color:var(--muted)] transition-all duration-200 focus:border-[color:var(--primary)] focus:ring-4 focus:ring-[color:var(--ring)] focus:outline-none',
+        'flex w-full rounded-xl border border-border bg-surface px-4 py-2.5 text-sm text-foreground placeholder:text-muted transition-all duration-200 focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50',
         className,
       )}
       {...props}
@@ -17,7 +17,7 @@ export function Input({ className, ...props }: InputHTMLAttributes<HTMLInputElem
 export function SearchInput({ className, ...props }: InputHTMLAttributes<HTMLInputElement>) {
   return (
     <div className={cn('relative w-full', className)}>
-      <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[color:var(--muted)]" />
+      <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
       <Input className="pl-11" {...props} />
     </div>
   );
