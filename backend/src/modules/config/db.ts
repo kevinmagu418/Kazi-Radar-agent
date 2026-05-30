@@ -5,18 +5,19 @@ dotenv.config();
 const MONGO_URI = process.env.MONGO_URI as string;
 
 export const connectDB = async () => {
+  if (!MONGO_URI) {
+    console.error("MONGO_URI is not defined in .env file");
+    process.exit(1);
+  }
+
   try {
     await mongoose.connect(MONGO_URI, {
-      // Optimize for performance
-      autoIndex: false,          // don't build indexes on every startup
-      maxPoolSize: 50,           // connection pool
-      serverSelectionTimeoutMS: 5000,
-      socketTimeoutMS: 45000,
-      family: 4,                 // IPv4
+      serverSelectionTimeoutMS: 30000, // Increase to 30 seconds
+      maxPoolSize: 10,
     });
     console.log("MongoDB connected successfully");
   } catch (error) {
-    console.error("MongoDB connection error:", error);
+    console.error("MongoDB connection error details:", error);
     process.exit(1);
   }
 

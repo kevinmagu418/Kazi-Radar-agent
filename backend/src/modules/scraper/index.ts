@@ -4,8 +4,8 @@ import pino from "pino";
 
 const logger = pino({ level: "info" });
 
-export const scrapeAndSave = async (url: string, category: string) => {
-  logger.info(`Scraping site: ${url} for category: ${category}`);
+export const scrapeAndSave = async (url: string, category: string, userId?: string) => {
+  logger.info(`Scraping site: ${url} for category: ${category} (User: ${userId || 'System'})`);
 
   const browser = await chromium.launch({ headless: true });
   const context = await browser.newContext({
@@ -27,6 +27,7 @@ export const scrapeAndSave = async (url: string, category: string) => {
       rawContent: {
         html: htmlContent,
         text: bodyText,
+        userId, // Attach userId to raw data
       },
       isProcessed: false,
     });

@@ -6,29 +6,38 @@ import { usePathname } from 'next/navigation';
 import { 
   Bell, 
   Home,
-  Search, 
-  Sparkles, 
   User, 
   Menu,
   X,
   Compass,
   Heart,
-  Settings,
-  Bot
+  Settings
 } from 'lucide-react';
+import Image from 'next/image';
 import { SearchInput } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
+import { ThemeToggle } from '@/components/ui/theme-toggle';
+import { CommandCenter } from './command-center';
 
 const navItems = [
   { href: '/dashboard', label: 'My Finds', icon: Compass },
   { href: '/', label: 'Overview', icon: Home },
-  { href: '#', label: 'Favorites', icon: Heart },
-  { href: '#', label: 'Settings', icon: Settings },
+  { href: '/dashboard/favorites', label: 'Favorites', icon: Heart },
+  { href: '/profile', label: 'Settings', icon: Settings },
 ];
 
-export function DashboardShell({ children }: { children: ReactNode }) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function DashboardShell({ children, profile }: { children: ReactNode, profile: any }) {
   const pathname = usePathname();
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const [isCommandCenterOpen, setIsCommandCenterOpen] = useState(false);
+  
+  const isFullyOnboarded = profile && (
+    profile.onboarding_completed || 
+    (profile.onboarding_role && profile.onboarding_role !== 'job-seeker' && profile.account_tier && profile.account_tier !== 'free')
+  );
+
+  const showOnboardingBanner = profile && !isFullyOnboarded;
 
   return (
     <div className="relative min-h-screen bg-background text-foreground">
@@ -39,14 +48,22 @@ export function DashboardShell({ children }: { children: ReactNode }) {
       </div>
 
       <div className="relative mx-auto flex max-w-7xl flex-col gap-6 p-4 md:p-8">
+        {showOnboardingBanner && (
+          <div className="glass-pill bg-primary/10 border border-primary/20 p-4 flex items-center justify-between text-sm">
+            <span>Welcome! Please complete your setup to get the best matches.</span>
+            <Link href="/onboarding" className="font-bold text-primary underline">Continue Onboarding</Link>
+          </div>
+        )}
         {/* Navigation Bar */}
         <header className="glass-pill sticky top-6 z-40 flex items-center justify-between px-6 py-3 shadow-2xl">
           <div className="flex items-center gap-8">
             <Link href="/" className="flex items-center gap-3">
               <div className="relative h-10 w-10 overflow-hidden rounded-full border border-white/10 shadow-lg shadow-primary/10">
-                <img 
+                <Image 
                   src="/applogo.png" 
-                  alt="Kaziradar Logo" 
+                  alt="Kaziradar Logo"
+                  width={40}
+                  height={40}
                   className="h-full w-full object-cover"
                 />
               </div>
@@ -77,21 +94,36 @@ export function DashboardShell({ children }: { children: ReactNode }) {
 
           <div className="flex items-center gap-3">
             <div className="hidden w-48 md:block lg:w-64">
-              <SearchInput placeholder="Ask me anything..." className="rounded-full bg-white/5 border-none" />
+              <div 
+                onClick={() => setIsCommandCenterOpen(true)}
+                className="cursor-pointer group"
+              >
+                <SearchInput 
+                  placeholder="Ask me anything..." 
+                  readOnly
+                  className="rounded-full bg-surface border-none pointer-events-none group-hover:bg-surface-hover transition-all" 
+                />
+              </div>
             </div>
             
-            <button className="flex h-10 w-10 items-center justify-center rounded-full bg-white/5 text-muted transition-colors hover:text-foreground">
+            <ThemeToggle className="hidden sm:flex" />
+
+            <button className="flex h-10 w-10 items-center justify-center rounded-full bg-surface text-muted transition-colors hover:text-foreground border border-border">
               <Bell className="h-4 w-4" />
             </button>
 
-            <div className="h-8 w-px bg-white/10 mx-1 hidden sm:block" />
+            <div className="h-8 w-px bg-border mx-1 hidden sm:block" />
 
-            <button className="flex items-center gap-2 rounded-full bg-white/5 pl-2 pr-4 py-1.5 transition-all hover:bg-white/10 group">
-              <div className="h-7 w-7 rounded-full bg-surface-hover border border-white/10 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
-                <User className="h-4 w-4" />
+            <Link href="/profile" className="flex items-center gap-2 rounded-full bg-surface border border-border pl-2 pr-4 py-1.5 transition-all hover:bg-surface-hover group">
+              <div className="h-7 w-7 rounded-full bg-surface-hover border border-border flex items-center justify-center text-primary group-hover:scale-110 transition-transform overflow-hidden">
+                {profile?.avatar_url ? (
+                  <Image src={profile.avatar_url} alt={profile.full_name || 'User'} width={28} height={28} className="h-full w-full object-cover" />
+                ) : (
+                  <User className="h-4 w-4" />
+                )}
               </div>
-              <span className="text-sm font-medium hidden sm:block">Me</span>
-            </button>
+              <span className="text-sm font-medium hidden sm:block">{profile?.full_name || 'Me'}</span>
+            </Link>
 
             <button 
               className="lg:hidden p-2 text-muted"
@@ -124,6 +156,14 @@ export function DashboardShell({ children }: { children: ReactNode }) {
         <main className="fade-in mt-2 flex-1 pb-12">
           {children}
         </main>
+
+        <CommandCenter 
+          isOpen={isCommandCenterOpen}
+          onClose={() => setIsCommandCenterOpen(false)}
+          onSearch={(query) => {
+            window.dispatchEvent(new CustomEvent('kaziradar-search', { detail: query }));
+          }}
+        />
       </div>
     </div>
   );

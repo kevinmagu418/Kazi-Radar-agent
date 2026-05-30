@@ -3,24 +3,52 @@
 @theme {
   --font-sans: var(--font-poppins);
   
-  --color-background: #0F0F14;
-  --color-primary: #FF4D8D;
-  --color-primary-glow: #FF8FB1;
-  --color-foreground: #F8F9FA;
-  --color-muted: #A1A1AA;
+  /* Semantic Tokens mapping to CSS Variables */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-primary-glow: var(--primary-glow);
+  --color-muted: var(--muted);
   
-  --color-surface: #15151D;
-  --color-surface-hover: #1B1B25;
-  --color-border: rgba(248, 249, 250, 0.06);
-  
+  --color-surface: var(--surface);
+  --color-surface-hover: var(--surface-hover);
+  --color-border: var(--border);
+  --color-shadow: var(--shadow);
+
   --radius-2xl: 1.5rem;
   --radius-3xl: 2.5rem;
   --radius-pill: 9999px;
 }
 
+:root {
+  /* Light Theme Variables */
+  --background: #F6F7FB;
+  --foreground: #18181F;
+  --muted: #6E6E80;
+  --primary: #FF4D8D;
+  --primary-glow: #FF8FB1;
+  --surface: #FFFFFF;
+  --surface-hover: #F4F5FF;
+  --border: #E8E8F0;
+  --shadow: rgba(0, 0, 0, 0.05);
+}
+
+.dark {
+  /* Dark Theme Variables */
+  --background: #0F0F14;
+  --foreground: #F8F9FA;
+  --muted: #A1A1AA;
+  --primary: #FF4D8D;
+  --primary-glow: #FF8FB1;
+  --surface: #15151D;
+  --surface-hover: #1B1B25;
+  --border: rgba(248, 249, 250, 0.06);
+  --shadow: rgba(0, 0, 0, 0.3);
+}
+
 @layer base {
   body {
-    @apply bg-background text-foreground font-sans leading-relaxed antialiased;
+    @apply bg-background text-foreground font-sans leading-relaxed antialiased transition-colors duration-300;
   }
 }
 
@@ -28,13 +56,17 @@
   .glow-soft {
     box-shadow: 0 0 30px rgba(255, 77, 141, 0.15);
   }
-  
+
   .glass-pill {
-    @apply bg-surface/80 backdrop-blur-xl border border-border rounded-pill;
+    @apply bg-surface/80 backdrop-blur-xl border border-border rounded-pill shadow-sm;
   }
 
   .glass-card-soft {
-    @apply bg-surface/40 backdrop-blur-md border border-border rounded-[2rem];
+    @apply bg-surface backdrop-blur-md border border-border rounded-[2rem] shadow-sm;
+  }
+
+  .dark .glass-card-soft {
+    @apply bg-surface/40;
   }
 
   .animate-pulse-slow {
@@ -54,9 +86,4 @@
 
 .float {
   animation: float 6s ease-in-out infinite;
-}
-
-:root {
-  --background: #0F0F14;
-  --foreground: #F8F9FA;
 }

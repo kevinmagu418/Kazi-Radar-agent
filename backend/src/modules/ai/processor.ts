@@ -15,20 +15,27 @@ if (!GROQ_API_KEY) {
   logger.error("GROQ_API_KEY is missing from environment variables.");
 }
 
-const model = new ChatGroq({
+const model8b = new ChatGroq({
   apiKey: GROQ_API_KEY as string,
-  model: "llama-3.3-70b-versatile",
+  model: "llama-3.1-8b-instant",
   temperature: 0,
+});
+
+const model70b = new ChatGroq({
+  apiKey: GROQ_API_KEY as string,
+  model: "llama-3.1-70b-versatile",
+  temperature: 0.1,
 });
 
 const parser = new JsonOutputParser();
 
-const promptTemplate = PromptTemplate.fromTemplate(
-  `You are an expert AI assistant specializing in identifying opportunities from raw data.
+const getPromptTemplate = (isPaid: boolean) => {
+  const baseInstructions = `You are an expert AI assistant specializing in identifying opportunities from raw data.
   Extract all opportunities found in the text provided below.
 
   Categories can be: tech, fintech, agriculture, grants, general.
-  Types can be: job, internship, grant, gig, volunteer, entrepreneurial-signal.
+  Types can be: job, internship, grant, gig, volunteer, entrepreneurial.
+  Use 'entrepreneurial' for business opportunities, startup funding, tenders, and projects.
 
   For each opportunity, extract:
   - title (string)
@@ -36,18 +43,30 @@ const promptTemplate = PromptTemplate.fromTemplate(
   - type (string)
   - location (string)
   - relevanceScore (number between 1-100)
-  - proofLinks (array of strings, extract URLs that verify this opportunity)
+  - proofLinks (array of strings, extract URLs that verify this opportunity)`;
 
+  const paidInstructions = `
+  - explanation (string, provide a personalized 1-sentence explanation of why this is a high-value opportunity, focusing on the specific benefits for an innovator or seeker)`;
+
+  const outputFormat = `
   Output MUST be a JSON array of objects.
 
   Raw Data:
   {text}
 
-  Output JSON:`
-);
+  Output JSON:`;
 
-export const extractOpportunities = async (data: any) => {
+  return PromptTemplate.fromTemplate(
+    `${baseInstructions}${isPaid ? paidInstructions : ""}${outputFormat}`
+  );
+};
+
+export const extractOpportunities = async (data: any, tier: string = "free") => {
   try {
+    const isPaid = tier !== "free";
+    const model = isPaid ? model70b : model8b;
+    const prompt = getPromptTemplate(isPaid);
+
     let textToProcess = "";
 
     if (typeof data === "string") {
@@ -65,7 +84,7 @@ export const extractOpportunities = async (data: any) => {
     const truncatedText = textToProcess.slice(0, 15000); 
     
     const chain = RunnableSequence.from([
-      promptTemplate,
+      prompt,
       model,
       parser
     ]);

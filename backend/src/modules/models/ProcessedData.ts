@@ -12,6 +12,7 @@ export interface IProcessedData extends Document {
   originalUrl: string;
   scrapedAt: Date;
   processedAt: Date;
+  explanation?: string;
 }
 
 const ProcessedDataSchema: Schema = new Schema({
@@ -26,6 +27,7 @@ const ProcessedDataSchema: Schema = new Schema({
   originalUrl: { type: String },
   scrapedAt: { type: Date, required: true },
   processedAt: { type: Date, default: Date.now },
+  explanation: { type: String }, // AI explanation
 });
 
 // Indexes for fast API response

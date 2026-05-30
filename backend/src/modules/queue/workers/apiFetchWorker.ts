@@ -10,7 +10,7 @@ const logger = pino({ level: "info" });
 export const apiFetchWorker = new Worker(
   "apiFetchQueue",
   async (job) => {
-    const { provider, query, metadata, category, sourceId } = job.data;
+    const { provider, query, metadata, category, sourceId, userId } = job.data;
     logger.info(`[ApiFetchWorker] Starting job ${job.id} for ${provider}: ${query}`);
 
     try {
@@ -30,6 +30,7 @@ export const apiFetchWorker = new Worker(
                   text: item.content,
                   proofLinks: item.proofLinks,
                   provider: item.provider,
+                  userId, // Pass userId down for processing
                 },
                 isProcessed: false,
                 scrapedAt: new Date(),

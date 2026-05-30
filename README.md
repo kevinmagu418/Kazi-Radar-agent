@@ -1,88 +1,111 @@
 # Kaziradar 🛰️
 
-Kaziradar is an elite, human-centered opportunity scanner designed to uncover high-value signals across tech, agriculture, and fintech sectors. It features a modern AI "Scout" that scours the web to deliver verified opportunities directly to your personalized dashboard.
+Kaziradar is an elite, human-centered opportunity scanner designed to uncover high-value signals across tech, agriculture, and fintech sectors. It features a modern AI "Scout" that scours the web to deliver verified, deduplicated opportunities directly to a high-performance dashboard.
 
-## ✨ New Features (v2.0 Refactor)
+## 💰 SaaS Business Model & Plan Tiers
 
-- **AI Scout Persona**: A friendly, human-centric interface that transforms technical data into simple, actionable discoveries.
-- **Modern Dashboard**: A complete UI/UX overhaul using Next.js (App Router), Tailwind CSS, and Framer Motion for a "premium SaaS" feel.
-- **Real-time Discovery**: Pulse-animated AI ingestion engine that shows the scout "thinking" while it finds opportunities.
-- **Mobile Optimized**: A fully responsive, pill-based navigation system designed for operators on the go.
-- **Cloud Ready**: Pre-configured Docker setup for the backend and Vercel-optimized frontend.
+Kaziradar uses a credit-based system for basic users and unlimited access for professional tiers.
 
-## 🏗️ Architecture
+| Tier | Name | Price | Features | AI Model |
+| :--- | :--- | :--- | :--- | :--- |
+| **Free** | Scout Basic | KES 0 | 30 scan credits, basic matching | Llama 3.1 8B |
+| **Flex** | 5-Day Pack | KES 200 | Unlimited scans (5 days), priority discovery | Llama 3.1 70B |
+| **Standard** | Monthly | KES 1,200 | Unlimited scans, continuous scout, AI insights | Llama 3.1 70B |
+| **Premium** | Quarterly | KES 3,000 | Best value, multi-sector scout, early features | Llama 3.1 70B |
 
-Kaziradar follows a modular, worker-based architecture orchestrated by **BullMQ** and **Redis**:
+### 🧠 Intelligence & Model Tiering
+The system dynamically scales AI intelligence based on the user's plan:
+*   **Standard Matching (Free)**: Uses lightweight models (8B) for fast, cost-effective classification and basic relevance scoring.
+*   **Deep Matching (Paid)**: Employs large-scale models (70B) for nuanced extraction of "entrepreneurial signals," complex tender analysis, and generating **Personalized AI Insights**.
 
-1.  **AI Scout (Frontend)**: The user-facing intelligence terminal that manages searches and displays discoveries.
-2.  **Crawler**: Orchestrates discovery by identifying target sources based on user preferences.
-3.  **Fetchers & Scrapers**:
-    *   **Elite API Fetchers**: Data ingestion from YouTube, Reddit, Adzuna, Remotive, and World Bank.
-    *   **Custom Scrapers**: Playwright-powered browser automation for high-value web targets.
-4.  **AI Processor**: A LangChain-powered pipeline that uses **Llama 3.3 (via Groq)** to transform raw text into structured objects with **verified proof links**.
-5.  **Database**: MongoDB stores both raw signals and processed opportunities.
+### 🛰️ Personalized Intelligence Feed
+Unlike traditional boards, every paid user receives a **Personalized Intelligence Feed**. The AI analyzes their specific interests and "explains" exactly why a particular opportunity is a high-value match for their specific goals.
+
+## 🏗️ Architecture & Distributed Scaling
+
+Kaziradar is engineered as a resilient, distributed system designed for high throughput and cost efficiency.
+
+### 🧩 Independent Worker Pools
+The system supports horizontal scaling via segmented worker pools. Each layer can be scaled independently based on load:
+*   **Crawler Workers**: Manage source discovery and job scheduling.
+*   **Scraper Workers**: Execute Playwright-based browser automation (High RAM/CPU).
+*   **API Fetchers**: Lightweight workers for high-speed API data ingestion.
+*   **AI Processors**: Handle LLM inference and deep intelligence extraction (High Latency).
+
+### ⚡ Smart Queue Prioritization
+Powered by **BullMQ**, the system uses a 1-100 priority scale:
+*   **Quality-Based Priority**: Opportunities from high-trust sources (e.g., World Bank, Adzuna) are automatically prioritized (Priority 1-20).
+*   **Fairness Logic**: Ensures low-priority "experimental" sources are processed without starving the high-value queues.
+
+## 🛡️ Reliability & Anti-Bot Protection
+
+We treat web scraping as a **reliability engineering** problem.
+
+### 🧩 Stealth & Resilience
+*   **Fingerprint Hardening**: Overrides `navigator.webdriver` and disables automation-controlled flags.
+*   **Identity Rotation**: Dynamic User-Agent shuffling from a pool of high-reputation signatures.
+*   **Self-Healing (Circuit Breaker)**: Blocked sources (403/429) enter an **exponential backoff** cooldown (1-24 hours) to prevent IP blacklisting.
+
+## 💎 Intelligence & Data Quality
+
+Kaziradar prioritizes **Insight over Data**.
+
+### 📊 Multi-dimensional Scoring
+Opportunities are ranked by a deterministic formula:
+`Score = (Source Credibility * 0.25) + (Freshness * 0.20) + (AI Relevance * 0.30) + (Competition * 0.10) + (Trend * 0.15)`
+
+### 🧠 Semantic Deduplication
+*   **Hard Dedup**: Exact URL matching.
+*   **Soft Dedup**: Title normalization and fuzzy matching across different providers.
+*   **Content Hashing**: SHA-256 fingerprinting for exactly-once processing logic.
+
+### 📝 Explainability & Enrichment
+Every discovery includes:
+*   **Human-Readable "Why"**: Context on why the system surfaced the signal.
+*   **Deep Enrichment**: Automatic extraction of skills, competition levels, and market trends.
+
+## 💰 Cost Optimization Strategy
+
+To keep AI inference costs sustainable at scale:
+*   **AI Output Caching**: Redis-based caching of LLM results (7-day TTL) using content hashes. Skips redundant AI processing for identical content.
+*   **Atomic Claiming**: Prevents double-processing of records in a distributed environment.
+*   **Context Truncation**: Optimized prompt density to minimize token usage while maintaining high extraction quality.
 
 ## 🛠️ Technology Stack
 
-### Frontend
-*   **Framework**: Next.js 15+ (App Router)
-*   **Styling**: Tailwind CSS 4.0
-*   **Animations**: Framer Motion
-*   **Icons**: Lucide React
-*   **State**: React Hooks + Lucide
-
-### Backend
+### Backend (Intelligence)
 *   **Runtime**: Node.js (ES Modules)
 *   **Orchestration**: BullMQ + Redis
-*   **AI/LLM**: LangChain + Groq (Llama 3.3-70b-versatile)
-*   **Scraping**: Playwright
+*   **AI Engine**: LangChain + Groq (Llama 3.3-70b)
+*   **Validation**: Zod (Strict Schema Enforcement)
 *   **Database**: MongoDB (Mongoose)
+*   **Scraping**: Playwright + Stealth Config
+
+### Frontend (Dashboard)
+*   **Framework**: Next.js 15+ (App Router)
+*   **Styling**: Tailwind CSS 4.0
+*   **Animations**: Framer Motion (Real-time Pulse)
+*   **Icons**: Lucide React
 
 ## 🚀 Getting Started
 
 ### Prerequisites
 - Node.js (v20+)
-- MongoDB (Atlas recommended for cloud)
-- Redis (Upstash recommended for cloud)
-
-### Environment Setup
-Create a `.env` file in both `frontend` and `backend` directories.
-
-**Backend (.env):**
-```env
-PORT=5000
-MONGO_URI=your_mongodb_uri
-REDIS_URL=your_redis_url
-GROQ_API_KEY=your_groq_key
-```
-
-**Frontend (.env.local):**
-```env
-NEXT_PUBLIC_API_URL=http://localhost:5000/api
-```
+- MongoDB & Redis (Cloud or Local)
+- Groq API Key
 
 ### Installation
 ```bash
-# Install dependencies
+# Install all dependencies
 cd backend && npm install
 cd ../frontend && npm install
 
-# Run servers
-# Terminal 1
+# Start the Intelligence Engine (Backend)
 cd backend && npm run dev
-# Terminal 2
+
+# Start the Dashboard (Frontend)
 cd frontend && npm run dev
 ```
 
-## ☁️ Deployment
-
-### Frontend (Vercel)
-Connect your repository to Vercel. Ensure `NEXT_PUBLIC_API_URL` is set to your deployed backend URL.
-
-### Backend (Koyeb / Render)
-The backend is Dockerized. Use the provided `Dockerfile` to deploy to Koyeb or Render.
-- **Memory Recommendation**: Minimum 512MB (Playwright requires sufficient RAM).
-- **Redis**: Use Upstash Redis for a reliable free-tier connection.
-
 ---
-*Kaziradar: Your street-smart AI scout for elite opportunity discovery.*
+*Kaziradar: Street-smart AI intelligence for elite opportunity discovery.*

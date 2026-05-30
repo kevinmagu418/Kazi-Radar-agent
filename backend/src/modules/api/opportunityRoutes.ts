@@ -67,17 +67,67 @@ router.get("/categories", (req, res) => {
   res.json(categories);
 });
 
+import { syncToSupabase, supabase } from "../utils/supabaseSync.js";
+
 // Manual trigger for scanning with preferences
 router.post("/scan", async (req, res) => {
   try {
-    const { categories, goals } = req.body;
+    const { categories, goals, userId } = req.body;
+    
+    if (!userId) {
+      return res.status(400).json({ error: "userId is required for scanning." });
+    }
+
+    // Check user tier and credits in Supabase
+    const { data: profile, error: profileError } = await supabase
+      .from('profiles')
+      .select('account_tier, scan_credits')
+      .eq('id', userId)
+      .single();
+
+    if (profileError || !profile) {
+      logger.error(`Error fetching profile for scan: ${profileError?.message}`);
+      return res.status(404).json({ error: "User profile not found." });
+    }
+
+    // Enforcement Logic
+    if (profile.account_tier === 'free') {
+      if ((profile.scan_credits || 0) <= 0) {
+        return res.status(403).json({ 
+          error: "You have run out of scan credits. Upgrade to a paid plan for unlimited scans!",
+          outOfCredits: true 
+        });
+      }
+
+      // Decrement 1 credit
+      const { error: updateError } = await supabase
+        .from('profiles')
+        .update({ scan_credits: profile.scan_credits - 1 })
+        .eq('id', userId);
+
+      if (updateError) {
+        logger.error(`Error decrementing credits: ${updateError.message}`);
+        return res.status(500).json({ error: "Failed to process scan credit." });
+      }
+      
+      logger.info(`User ${userId} used 1 credit. Remaining: ${profile.scan_credits - 1}`);
+    } else {
+      logger.info(`User ${userId} is on ${profile.account_tier} plan. Unlimited scans enabled.`);
+    }
+
     const preferences = { categories, goals };
-    logger.info(`Starting Crawler Discovery with preferences: ${JSON.stringify(preferences)}`);
+    logger.info(`Starting Crawler Discovery for user ${userId} with preferences: ${JSON.stringify(preferences)}`);
+    
     await crawlQueue.add("manual-scan", { 
       categories: categories || [], 
-      goals: goals || [] 
+      goals: goals || [],
+      userId 
     });
-    res.json({ message: "Scan triggered with preferences.", categories, goals });
+
+    res.json({ 
+      message: "Scan triggered successfully.", 
+      remainingCredits: profile.account_tier === 'free' ? profile.scan_credits - 1 : 'unlimited' 
+    });
   } catch (err) {
     logger.error(`Error triggering scan: ${err}`);
     res.status(500).json({ error: "Failed to trigger scan." });

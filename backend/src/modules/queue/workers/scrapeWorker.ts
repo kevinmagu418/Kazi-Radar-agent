@@ -9,7 +9,7 @@ const logger = pino({ level: "info" });
 export const scrapeWorker = new Worker(
   "scrapeQueue",
   async (job: Job) => {
-    const { url, category } = job.data;
+    const { url, category, userId } = job.data;
 
     // Check if URL was scraped recently (within the last 12 hours)
     const twelveHoursAgo = new Date(Date.now() - 12 * 60 * 60 * 1000);
@@ -20,7 +20,7 @@ export const scrapeWorker = new Worker(
       return;
     }
 
-    await scrapeAndSave(url, category);
+    await scrapeAndSave(url, category, userId);
   },
   { 
     connection: redisConnection,

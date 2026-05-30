@@ -7,12 +7,14 @@ import pino from "pino";
 
 const logger = pino({ level: "info" });
 
+import { syncToSupabase, supabase } from "../../utils/supabaseSync.js";
+
 export const processWorker = new Worker(
   "processQueue",
   async (job: Job) => {
     logger.info("Starting Process Job");
     try {
-      const rawRecords = await RawData.find({ isProcessed: false }).limit(5);
+      const rawRecords = await RawData.find({ isProcessed: false }).limit(20);
 
       if (rawRecords.length === 0) {
         logger.info("No unprocessed raw records found.");
@@ -20,15 +22,28 @@ export const processWorker = new Worker(
       }
 
       for (const record of rawRecords) {
-        logger.info(`[ProcessWorker] Processing Job ${job.id} for RawData: ${record._id}`);
-    
-        logger.info(`[ProcessWorker] Sending to AI Processor: ${record.title}`);
-        const opportunities = await extractOpportunities(record.rawContent);
+        logger.info(`[ProcessWorker] Processing RawData: ${record._id}`);
+        
+        // Find if this raw data was triggered by a specific user to determine tier
+        const userId = record.rawContent.userId;
+        let tier = "free";
+        
+        if (userId) {
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('account_tier')
+            .eq('id', userId)
+            .single();
+          if (profile) tier = profile.account_tier;
+        }
+
+        logger.info(`[ProcessWorker] Sending to AI Processor (${tier} tier): ${record.title}`);
+        const opportunities = await extractOpportunities(record.rawContent, tier);
         logger.info(`[ProcessWorker] AI extracted ${opportunities.length} opportunities`);
 
         if (Array.isArray(opportunities) && opportunities.length > 0) {
           for (const opt of opportunities) {
-            await ProcessedData.create({
+            const processed = await ProcessedData.create({
               title: opt.title || "Untitled Opportunity",
               category: opt.category || record.category,
               type: opt.type,
@@ -39,7 +54,11 @@ export const processWorker = new Worker(
               originalUrl: record.url,
               url: opt.url || record.url,
               scrapedAt: record.scrapedAt,
+              explanation: opt.explanation || null, // Capture AI explanation for paid users
             });
+
+            // Sync to Supabase
+            await syncToSupabase(processed, userId);
           }
         } else {
           logger.info(`No structured opportunities found in ${record.url}`);
