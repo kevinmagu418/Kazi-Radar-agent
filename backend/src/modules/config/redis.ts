@@ -5,12 +5,19 @@ dotenv.config();
 
 const REDIS_URL = process.env.REDIS_URL || "redis://127.0.0.1:6379";
 
-const isTLS = REDIS_URL.startsWith("rediss://");
-
-export const redisConnection = new Redis(REDIS_URL, {
+const redisOptions: any = {
   maxRetriesPerRequest: null,
-  tls: isTLS ? { rejectUnauthorized: false } : undefined,
-});
+};
+
+if (REDIS_URL.startsWith("rediss://")) {
+  redisOptions.tls = {
+    rejectUnauthorized: false,
+  };
+}
+
+console.log(`Connecting to Redis: ${REDIS_URL.split('@').pop()?.split('/')[0]} (TLS: ${!!redisOptions.tls})`);
+
+export const redisConnection = new Redis(REDIS_URL, redisOptions);
 
 redisConnection.on("error", (err) => {
   console.error("Redis connection error:", err);
