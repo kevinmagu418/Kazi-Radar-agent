@@ -78,6 +78,11 @@ router.post("/scan", async (req, res) => {
       return res.status(400).json({ error: "userId is required for scanning." });
     }
 
+    if (!supabase) {
+      logger.error("Scan failed: Supabase client not initialized.");
+      return res.status(500).json({ error: "Intelligence terminal synchronization unavailable. Please contact support." });
+    }
+
     // Check user tier and credits in Supabase
     const { data: profile, error: profileError } = await supabase
       .from('profiles')

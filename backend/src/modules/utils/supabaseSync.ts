@@ -7,14 +7,16 @@ dotenv.config();
 
 const logger = pino({ level: "info" });
 
-const supabaseUrl = process.env.SUPABASE_URL || "";
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || "";
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-if (!supabaseUrl || !supabaseKey) {
-  logger.error("Supabase credentials missing in environment variables.");
+export const supabase = (supabaseUrl && supabaseKey) 
+  ? createClient(supabaseUrl, supabaseKey) 
+  : null;
+
+if (!supabase) {
+  logger.error("Supabase credentials missing in environment variables. Actions requiring Supabase will be skipped.");
 }
-
-export const supabase = createClient(supabaseUrl, supabaseKey);
 
 /**
  * Generates a stable hash for the opportunity to prevent duplicates in Supabase.
@@ -29,6 +31,10 @@ export const generateContentHash = (opportunity: any) => {
  * If userId is provided, it also populates the personalized intelligence_feed.
  */
 export const syncToSupabase = async (opportunity: any, userId?: string) => {
+  if (!supabase) {
+    logger.error("Skipping Supabase sync: Client not initialized.");
+    return null;
+  }
   try {
     const contentHash = generateContentHash(opportunity);
 

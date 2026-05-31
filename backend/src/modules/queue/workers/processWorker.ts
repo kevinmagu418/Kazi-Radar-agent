@@ -28,7 +28,7 @@ export const processWorker = new Worker(
         const userId = record.rawContent.userId;
         let tier = "free";
         
-        if (userId) {
+        if (userId && supabase) {
           const { data: profile } = await supabase
             .from('profiles')
             .select('account_tier')
