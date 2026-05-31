@@ -5,12 +5,15 @@ export async function createClient() {
   const cookieStore = await cookies();
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;        
+
+  const isUrlValid = supabaseUrl && supabaseUrl.startsWith('http');
 
   return createServerClient(
-    supabaseUrl || 'https://placeholder.supabase.co',
+    isUrlValid ? supabaseUrl : 'https://placeholder.supabase.co',
     supabaseAnonKey || 'placeholder',
     {
+
       cookies: {
         async get(name: string) {
           const cookie = await cookieStore.get(name);
