@@ -7,6 +7,10 @@ export async function createClient() {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;        
 
+  if (!supabaseUrl || !supabaseAnonKey) {
+    console.error('Server-side Supabase credentials missing!');
+  }
+
   const isUrlValid = supabaseUrl && supabaseUrl.startsWith('http');
 
   return createServerClient(

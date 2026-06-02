@@ -11,7 +11,11 @@ export async function updateSession(request: NextRequest) {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-  const isUrlValid = supabaseUrl && supabaseUrl.startsWith('http');
+  if (!supabaseUrl || !supabaseAnonKey || supabaseUrl.includes('placeholder')) {
+    console.error('Middleware: Supabase credentials missing or set to placeholder!');
+  }
+
+  const isUrlValid = supabaseUrl && supabaseUrl.startsWith('http') && !supabaseUrl.includes('placeholder');
 
   const supabase = createServerClient(
     isUrlValid ? supabaseUrl : 'https://placeholder.supabase.co',
@@ -98,6 +102,10 @@ export async function updateSession(request: NextRequest) {
 }
 
 export async function proxy(request: NextRequest) {
+  return await updateSession(request);
+}
+
+export async function middleware(request: NextRequest) {
   return await updateSession(request);
 }
 
