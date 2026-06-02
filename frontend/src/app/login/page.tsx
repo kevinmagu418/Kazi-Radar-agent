@@ -30,7 +30,17 @@ export default function LoginPage() {
         password,
       });
 
-      if (error) throw error;
+      if (error) {
+        if (error.message.includes('Email not confirmed')) {
+          setError('Your email is not verified yet. Please check your inbox for the activation link.');
+        } else if (error.message.includes('Invalid login credentials')) {
+          setError('Invalid email or password. Please try again.');
+        } else {
+          throw error;
+        }
+        setIsLoading(false);
+        return;
+      }
       
       router.push('/dashboard');
     } catch (err: unknown) {

@@ -223,7 +223,31 @@ export const api = {
       const { error } = await supabase
         .from('bookmarks')
         .insert({ user_id: user.id, opportunity_id: opportunityId });
+      
+      // Log high-intent activity
+      if (!error) {
+        await this.logActivity(opportunityId, 'save');
+      }
       return !error;
+    }
+  },
+
+  /**
+   * Logs user behavioral signals for the Affinity Engine.
+   */
+  async logActivity(opportunityId: string, action: 'view' | 'click' | 'save' | 'ignore'): Promise<void> {
+    const supabase = createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    try {
+      await supabase.from('scout_activity_logs').insert({
+        user_id: user.id,
+        opportunity_id: opportunityId,
+        action_type: action
+      });
+    } catch (err) {
+      console.warn('[Affinity] Failed to log activity:', err);
     }
   },
 

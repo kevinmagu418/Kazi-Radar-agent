@@ -11,7 +11,8 @@ import {
   X,
   Compass,
   Heart,
-  Settings
+  Settings,
+  ShieldCheck
 } from 'lucide-react';
 import Image from 'next/image';
 import { SearchInput } from '@/components/ui/input';
@@ -21,6 +22,7 @@ import { CommandCenter } from './command-center';
 
 const navItems = [
   { href: '/dashboard', label: 'My Finds', icon: Compass },
+  { href: '/dashboard/sentinel', label: 'Sentinel', icon: ShieldCheck },
   { href: '/', label: 'Overview', icon: Home },
   { href: '/dashboard/favorites', label: 'Favorites', icon: Heart },
   { href: '/profile', label: 'Settings', icon: Settings },

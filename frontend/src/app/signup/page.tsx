@@ -92,14 +92,21 @@ function SignupForm() {
 
   if (isSuccess) {
     return (
-      <AuthLayout title="Check your inbox" subtitle="A verification link is on its way">
+      <AuthLayout title="Verify your access" subtitle="Action required to activate your terminal">
         <div className="space-y-6">
           <Feedback 
             type="success"
-            title="Account Created"
-            message={`We sent a verification link to ${email}. Click it to activate your AI intelligence terminal.`}
+            title="Activation Email Sent"
+            message={`We've sent a secure verification link to ${email}. You must click this link to activate your AI scout and access the dashboard.`}
           />
-          <p className="text-xs text-muted/40 text-center">Don&apos;t see it? Check your spam folder.</p>
+          <div className="p-4 rounded-xl bg-primary/5 border border-primary/10 space-y-3">
+            <h4 className="text-xs font-bold uppercase tracking-widest text-primary">Next Steps:</h4>
+            <ul className="text-xs text-muted/60 space-y-2 list-disc pl-4">
+              <li>Check your inbox (and spam folder)</li>
+              <li>Click the "Confirm Email" link</li>
+              <li>Your scout will activate automatically</li>
+            </ul>
+          </div>
           <button
             className="w-full h-14 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 transition-all font-bold text-sm"
             onClick={() => router.push('/login')}

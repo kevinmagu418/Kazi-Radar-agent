@@ -17,6 +17,8 @@ Kaziradar uses a credit-based system for basic users and unlimited access for pr
 The system dynamically scales AI intelligence based on the user's plan:
 *   **Standard Matching (Free)**: Uses lightweight models (8B) for fast, cost-effective classification and basic relevance scoring.
 *   **Deep Matching (Paid)**: Employs large-scale models (70B) for nuanced extraction of "entrepreneurial signals," complex tender analysis, and generating **Personalized AI Insights**.
+*   **Scout Sentinel (Premium)**: A private Intelligence Vault that automatically archives high-value opportunities (>85% relevance) and provides a **Market Pulse** dashboard for tracking sector trends and competition.
+*   **Behavioral Intelligence Layer**: An Amazon-like "Affinity Engine" that studies user interactions (clicks, saves, views) to dynamically adjust relevance and personalize the discovery feed in real-time.
 
 ### 🛰️ Personalized Intelligence Feed
 Unlike traditional boards, every paid user receives a **Personalized Intelligence Feed**. The AI analyzes their specific interests and "explains" exactly why a particular opportunity is a high-value match for their specific goals.

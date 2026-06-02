@@ -19,8 +19,27 @@ export default function AuthCallback() {
       }
 
       if (data.session) {
-        // Successful login/verification
-        router.push('/dashboard');
+        const user = data.session.user;
+
+        // Check if onboarding is completed
+        const { data: profile, error: profileError } = await supabase
+          .from('profiles')
+          .select('onboarding_completed')
+          .eq('id', user.id)
+          .single();
+
+        if (profileError) {
+          console.error('Error fetching profile:', profileError);
+          // Fallback to dashboard if profile fetch fails
+          router.push('/dashboard');
+          return;
+        }
+
+        if (profile?.onboarding_completed) {
+          router.push('/dashboard');
+        } else {
+          router.push('/onboarding');
+        }
       } else {
         router.push('/login');
       }

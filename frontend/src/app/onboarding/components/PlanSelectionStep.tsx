@@ -50,7 +50,7 @@ export const plans = [
     priceLabel: 'KES 3,000',
     period: 'per quarter',
     description: 'Best value for long-term growth and research.',
-    features: ['Everything in Monthly', 'Best price value', 'Early access features', 'Multi-sector scout'],
+    features: ['Everything in Monthly', 'Scout Sentinel Intelligence Vault', 'Real-time Market Pulse', 'Best price value'],
     icon: Crown,
     color: 'text-amber-400'
   }
