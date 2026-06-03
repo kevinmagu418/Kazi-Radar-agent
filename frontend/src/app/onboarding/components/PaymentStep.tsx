@@ -91,8 +91,8 @@ export function PaymentStep({ selectedPlanId, onNext }: PaymentStepProps) {
 
       setTransactionId(result.transaction_id);
       setIsStkSent(true);
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'An unknown error occurred');
     } finally {
       setIsLoading(false);
     }
@@ -145,7 +145,7 @@ export function PaymentStep({ selectedPlanId, onNext }: PaymentStepProps) {
         <div className="space-y-6">
           <h2 className="text-3xl font-bold tracking-tight">Confirm on your phone</h2>
           <p className="text-muted/80">
-            We've sent an M-Pesa prompt to <strong>{phoneNumber}</strong>.
+            We&apos;ve sent an M-Pesa prompt to <strong>{phoneNumber}</strong>.
           </p>
           
           <Feedback 

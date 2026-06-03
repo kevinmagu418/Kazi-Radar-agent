@@ -116,15 +116,19 @@ export function DashboardShell({ children, profile }: { children: ReactNode, pro
 
             <div className="h-8 w-px bg-border mx-1 hidden sm:block" />
 
-            <Link href="/profile" className="flex items-center gap-2 rounded-full bg-surface border border-border pl-2 pr-4 py-1.5 transition-all hover:bg-surface-hover group">
-              <div className="h-7 w-7 rounded-full bg-surface-hover border border-border flex items-center justify-center text-primary group-hover:scale-110 transition-transform overflow-hidden">
+            <Link href="/profile" className="flex items-center gap-2 rounded-2xl bg-surface border border-border pl-1.5 pr-4 py-1.5 transition-all hover:bg-surface-hover hover:border-primary/20 group relative overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+              <div className="relative h-8 w-8 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary group-hover:scale-105 transition-transform overflow-hidden shadow-sm">
                 {profile?.avatar_url ? (
-                  <Image src={profile.avatar_url} alt={profile.full_name || 'User'} width={28} height={28} className="h-full w-full object-cover" />
+                  <Image src={profile.avatar_url} alt={profile.full_name || 'User'} width={32} height={32} className="h-full w-full object-cover" />
                 ) : (
                   <User className="h-4 w-4" />
                 )}
               </div>
-              <span className="text-sm font-medium hidden sm:block">{profile?.full_name || 'Me'}</span>
+              <div className="hidden sm:flex flex-col items-start -space-y-0.5 relative z-10">
+                <span className="text-xs font-bold tracking-tight">{profile?.full_name?.split(' ')[0] || 'Scout'}</span>
+                <span className="text-[9px] font-bold text-muted/40 uppercase tracking-widest">{profile?.account_tier || 'Free'}</span>
+              </div>
             </Link>
 
             <button 

@@ -18,10 +18,11 @@ import { ThemeToggle } from '@/components/ui/theme-toggle';
 
 import { ProfileForm } from '@/components/auth/ProfileForm';
 
+import { UserProfile } from '@/lib/api';
+
 export default function ProfilePage() {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [profile, setProfile] = useState<any>(null);
-  const [subscription, setSubscription] = useState<any>(null);
+  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [subscription, setSubscription] = useState<{ id: string; current_period_end: string; cancel_at_period_end: boolean } | null>(null);
   const [loading, setLoading] = useState(true);
   
   const supabase = createClient();
@@ -74,7 +75,7 @@ export default function ProfilePage() {
     setLoading(false);
   };
 
-  if (loading) return (
+  if (loading || !profile) return (
     <div className="flex h-[80vh] items-center justify-center">
       <Loader2 className="animate-spin h-10 w-10 text-primary" />
     </div>
@@ -85,17 +86,18 @@ export default function ProfilePage() {
       {/* Profile Header Card */}
       <div className="relative overflow-hidden rounded-[2.5rem] bg-surface border border-border p-8 md:p-12 shadow-sm">
         <div className="relative z-10 flex flex-col md:flex-row items-center gap-8 text-center md:text-left">
-          <div className="h-32 w-32 rounded-full bg-gradient-to-br from-primary/20 to-blue-500/20 border-2 border-border flex items-center justify-center text-primary overflow-hidden shadow-2xl shrink-0 mx-auto md:mx-0">
+          <div className="h-32 w-32 rounded-[2rem] bg-gradient-to-br from-primary/10 to-blue-500/10 border border-white/5 flex items-center justify-center text-primary overflow-hidden shadow-2xl shrink-0 mx-auto md:mx-0 group relative">
             {profile?.avatar_url ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img 
                 src={profile.avatar_url} 
                 alt="Profile" 
-                className="h-full w-full object-cover"
+                className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
               />
             ) : (
-              <User className="h-14 w-14" />
+              <User className="h-14 w-14 opacity-20" />
             )}
+            <div className="absolute inset-0 bg-primary/10 opacity-0 group-hover:opacity-100 transition-opacity" />
           </div>
 
           <div className="flex-1 space-y-3">
@@ -130,7 +132,7 @@ export default function ProfilePage() {
               Intelligence Brief
             </h3>
             
-            <ProfileForm initialProfile={profile} />
+            {profile && <ProfileForm initialProfile={profile} />}
           </div>
           
           <div className="glass-card rounded-[2rem] p-8 space-y-6">
@@ -202,7 +204,7 @@ export default function ProfilePage() {
               <div className="p-4 rounded-2xl bg-surface border border-border">
                 <span className="text-[10px] font-bold uppercase tracking-widest text-muted/40 block mb-2">My Interests</span>
                 <div className="flex flex-wrap gap-2">
-                  {profile?.interests?.length > 0 ? (
+                  {(profile?.interests && profile.interests.length > 0) ? (
                     profile.interests.map((i: string) => <Badge key={i} tone="primary" className="capitalize">{i}</Badge>)
                   ) : (
                     <p className="text-xs text-muted/40 italic">No interests set</p>

@@ -171,7 +171,7 @@ export const api = {
 
       if (error) throw new ApiError(500, error.message);
 
-      return (data as any[])
+      return (data as { opportunities: Opportunity | Opportunity[] | null }[])
         .map((b) => (Array.isArray(b.opportunities) ? b.opportunities[0] : b.opportunities) as Opportunity | null)
         .filter((o): o is Opportunity => o !== null);
     } catch (error) {

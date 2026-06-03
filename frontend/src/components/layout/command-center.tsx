@@ -2,9 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Bot, X, Send, Sparkles, Search, MessageSquare, Compass, Zap } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
+import { Bot, X, Send, Sparkles, Zap } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface Message {

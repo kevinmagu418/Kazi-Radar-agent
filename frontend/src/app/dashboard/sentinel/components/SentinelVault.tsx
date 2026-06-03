@@ -17,8 +17,24 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
+interface VaultItem {
+  id: string;
+  archived_at: string;
+  ai_strategy_notes: string | null;
+  sentinel_score: number | null;
+  opportunities: {
+    id: string;
+    title: string;
+    category: string;
+    location: string;
+    url: string;
+    relevance_score: number;
+    type: string;
+  };
+}
+
 export function SentinelVault() {
-  const [vaultItems, setVaultItems] = useState<any[]>([]);
+  const [vaultItems, setVaultItems] = useState<VaultItem[]>([]);
   const [affinity, setAffinity] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
   const supabase = createClient();
@@ -42,7 +58,7 @@ export function SentinelVault() {
           .single()
       ]);
 
-      if (vaultRes.data) setVaultItems(vaultRes.data);
+      if (vaultRes.data) setVaultItems(vaultRes.data as unknown as VaultItem[]);
       if (profileRes.data?.affinity_score) setAffinity(profileRes.data.affinity_score as Record<string, number>);
       
       setLoading(false);
@@ -134,7 +150,7 @@ export function SentinelVault() {
                           <Sparkles className="h-3 w-3" /> Sentinel Strategy
                         </div>
                         <p className="text-sm text-muted/80 leading-relaxed italic">
-                          "{item.ai_strategy_notes || `Based on your profile as an ${item.opportunities.type}, this is a high-impact match. Focus your application on your proven results in this sector.`}"
+                          &ldquo;{item.ai_strategy_notes || `Based on your profile as an ${item.opportunities.type}, this is a high-impact match. Focus your application on your proven results in this sector.`}&rdquo;
                         </p>
                       </div>
                     </div>

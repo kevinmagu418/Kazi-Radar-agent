@@ -5,7 +5,6 @@ import Image from 'next/image';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
   ArrowRight,
-  Compass,
   Globe,
   RefreshCw,
   Sparkles,
@@ -67,8 +66,9 @@ export default function DashboardPage() {
 
   // Listen for global search events from Command Center
   useEffect(() => {
-    const handleGlobalSearch = (e: any) => {
-      setSearchQuery(e.detail);
+    const handleGlobalSearch = (e: Event) => {
+      const customEvent = e as CustomEvent<string>;
+      setSearchQuery(customEvent.detail);
     };
     window.addEventListener('kaziradar-search', handleGlobalSearch);
     return () => window.removeEventListener('kaziradar-search', handleGlobalSearch);

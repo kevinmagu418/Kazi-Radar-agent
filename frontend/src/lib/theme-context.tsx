@@ -13,18 +13,16 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setThemeState] = useState<Theme>('dark');
+  const [theme, setThemeState] = useState<Theme>(() => {
+    if (typeof window !== 'undefined') {
+      return (localStorage.getItem('kaziradar-theme') as Theme) || 'dark';
+    }
+    return 'dark';
+  });
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    const savedTheme = localStorage.getItem('kaziradar-theme') as Theme | null;
-    if (savedTheme) {
-      setThemeState(savedTheme);
-    } else {
-      // If no saved theme, explicitly set to dark
-      setThemeState('dark');
-      localStorage.setItem('kaziradar-theme', 'dark');
-    }
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
   }, []);
 

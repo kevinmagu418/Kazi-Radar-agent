@@ -5,11 +5,12 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { AnimatePresence, motion } from 'framer-motion';
 import { createClient } from '@/lib/supabase/client';
 import { WelcomeStep } from './components/WelcomeStep';
+import { ProfileStep } from './components/ProfileStep';
 import { RoleSelectionStep } from './components/RoleSelectionStep';
 import { PlanSelectionStep } from './components/PlanSelectionStep';
 import { PaymentStep } from './components/PaymentStep';
 
-type Step = 'welcome' | 'role' | 'plan' | 'payment' | 'processing';
+type Step = 'welcome' | 'profile' | 'role' | 'plan' | 'payment' | 'processing';
 
 function OnboardingContent() {
   const router = useRouter();
@@ -49,7 +50,9 @@ function OnboardingContent() {
     checkStatus();
   }, [searchParams, router, supabase]);
 
-  const handleWelcomeNext = () => setStep('role');
+  const handleWelcomeNext = () => setStep('profile');
+  
+  const handleProfileNext = () => setStep('role');
 
   const handleRoleSelect = (role: string) => {
     setUserData((prev) => ({ ...prev, role }));
@@ -109,6 +112,9 @@ function OnboardingContent() {
         {step === 'welcome' && (
           <WelcomeStep key="welcome" onNext={handleWelcomeNext} />
         )}
+        {step === 'profile' && (
+          <ProfileStep key="profile" onNext={handleProfileNext} />
+        )}
         {step === 'role' && (
           <RoleSelectionStep key="role" onNext={handleRoleSelect} />
         )}
@@ -141,7 +147,7 @@ function OnboardingContent() {
       {/* Step Indicator */}
       {step !== 'processing' && (
         <div className="fixed bottom-12 left-1/2 -translate-x-1/2 flex gap-3">
-          {(['welcome', 'role', 'plan', 'payment'] as Step[]).map((s) => (
+          {(['welcome', 'profile', 'role', 'plan', 'payment'] as Step[]).map((s) => (
             <div 
               key={s}
               className={`h-1.5 rounded-full transition-all duration-500 ${

@@ -1,0 +1,23 @@
+export const SEO_CONFIG = {
+  projectName: 'KaziRadar',
+  defaultTitle: 'KaziRadar | AI-Powered Opportunity Intelligence Platform',
+  titleTemplate: '%s | KaziRadar',
+  description: 'KaziRadar is your personal AI scout for discovering high-value jobs, grants, remote opportunities, and startup signals faster than the competition.',
+  siteUrl: process.env.NEXT_PUBLIC_SITE_URL || 'https://kazi-radar-agent.vercel.app',
+  twitterHandle: '@kaziradar',
+  author: 'KaziRadar Team',
+  keywords: [
+    'AI opportunity scanner',
+    'opportunity discovery platform',
+    'remote jobs Africa',
+    'startup funding opportunities',
+    'grant discovery platform',
+    'entrepreneurship opportunities',
+    'AI job discovery',
+    'jobs in Kenya',
+    'grants in Kenya',
+    'AI scout',
+    'opportunity intelligence',
+  ],
+  ogImage: 'https://res.cloudinary.com/dkonchtzn/image/upload/v1779597332/applogo_smrqeg.png',
+};
