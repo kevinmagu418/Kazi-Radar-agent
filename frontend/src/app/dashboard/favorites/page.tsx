@@ -2,11 +2,11 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
+import Image from 'next/image';
 import {
   Heart,
   RefreshCw,
   ExternalLink,
-  Bot,
   Star,
   Clock,
   MapPin,
@@ -122,8 +122,8 @@ export default function FavoritesPage() {
       <div className="min-h-[400px]">
         {isLoading ? (
           <div className="flex h-96 flex-col items-center justify-center gap-6 animate-pulse">
-            <div className="h-20 w-20 rounded-full bg-primary/10 flex items-center justify-center">
-              <Bot className="h-10 w-10 text-primary animate-bounce" />
+            <div className="h-20 w-20 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden border border-primary/20">
+              <Image src="/applogo.png" alt="Scout" width={80} height={80} className="object-cover" />
             </div>
             <h3 className="text-xl font-bold">Accessing your vault...</h3>
           </div>

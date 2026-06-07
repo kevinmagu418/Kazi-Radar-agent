@@ -13,7 +13,7 @@ import {
   Sparkles,
   ChevronRight,
   ShieldCheck,
-  Zap
+  Flame
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -127,7 +127,7 @@ export function SentinelVault() {
                           </Badge>
                           {hasHighAffinity && (
                             <Badge className="bg-emerald-500/10 text-emerald-400 border-emerald-500/20 uppercase text-[10px] tracking-widest font-bold flex items-center gap-1">
-                              <Zap className="h-2 w-2 fill-current" /> High Interest Match
+                              <Flame className="h-2 w-2 fill-current" /> High Interest Match
                             </Badge>
                           )}
                           <div className="flex items-center gap-1.5 text-xs text-muted/60 font-medium">

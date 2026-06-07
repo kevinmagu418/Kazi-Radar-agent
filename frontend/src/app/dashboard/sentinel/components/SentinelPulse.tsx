@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { TrendingUp, Minus, Zap } from 'lucide-react';
+import { TrendingUp, Minus, Flame } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
@@ -62,9 +62,9 @@ export function SentinelPulse() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div className="space-y-1">
-          <h2 className="text-2xl font-bold tracking-tight">Your Interest Pulse</h2>
-          <p className="text-xs font-bold text-muted/40 uppercase tracking-widest flex items-center gap-2">
-            Personalized Behavioral Intelligence <Zap className="h-3 w-3 text-primary" />
+          <h2 className="text-lg font-bold tracking-tight">Your Interest Pulse</h2>
+          <p className="text-[9px] font-bold text-muted/40 uppercase tracking-widest flex items-center gap-2">
+            Personalized Behavioral Intelligence <Flame className="h-3 w-3 text-primary" />
           </p>
         </div>
       </div>
@@ -79,9 +79,9 @@ export function SentinelPulse() {
           >
             <Card className="p-5 bg-surface/40 border-white/5 hover:border-white/10 transition-all flex items-center justify-between group overflow-hidden relative">
               <div className="space-y-1 relative z-10">
-                <span className="text-[10px] font-bold text-muted/40 uppercase tracking-widest">{trend.category}</span>
-                <p className="text-lg font-bold">{trend.volume} <span className="text-[10px] text-muted/40 font-normal">pts</span></p>
-                <div className={`flex items-center gap-1 text-[11px] font-bold ${trend.color}`}>
+                <span className="text-[8px] font-bold text-muted/40 uppercase tracking-widest">{trend.category}</span>
+                <p className="text-base font-bold">{trend.volume} <span className="text-[9px] text-muted/40 font-normal">pts</span></p>
+                <div className={`flex items-center gap-1 text-[10px] font-bold ${trend.color}`}>
                   {trend.status === 'up' && <TrendingUp className="h-3 w-3" />}
                   {trend.status === 'stable' && <Minus className="h-3 w-3" />}
                   Affinity {trend.change}

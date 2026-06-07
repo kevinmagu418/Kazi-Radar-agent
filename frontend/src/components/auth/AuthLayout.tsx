@@ -3,7 +3,8 @@
 import { motion } from 'framer-motion';
 import { ReactNode } from 'react';
 import Link from 'next/link';
-import { Bot, ChevronLeft } from 'lucide-react';
+import { ChevronLeft } from 'lucide-react';
+import Image from 'next/image';
 
 interface AuthLayoutProps {
   children: ReactNode;
@@ -27,11 +28,17 @@ export function AuthLayout({ children, title, subtitle, backLink }: AuthLayoutPr
         className="w-full max-w-md z-10"
       >
         <div className="text-center mb-10">
-          <Link href="/" className="inline-flex items-center gap-2 mb-8 group">
-            <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center border border-primary/20 group-hover:scale-110 transition-transform">
-              <Bot className="h-6 w-6 text-primary" />
+          <Link href="/" className="inline-flex flex-col items-center mb-8 group">
+            <div className="h-16 w-16 rounded-2xl overflow-hidden border border-primary/20 shadow-xl group-hover:scale-110 transition-transform mb-3">
+              <Image 
+                src="/applogo.png" 
+                alt="KaziRadar" 
+                width={64} 
+                height={64} 
+                className="h-full w-full object-cover"
+              />
             </div>
-            <span className="text-xl font-bold tracking-tight">KaziRadar</span>
+            <span className="text-xl font-bold tracking-tight uppercase tracking-widest text-foreground/80 group-hover:text-primary transition-colors">KaziRadar</span>
           </Link>
           
           <h1 className="text-3xl font-bold tracking-tight mb-3">{title}</h1>

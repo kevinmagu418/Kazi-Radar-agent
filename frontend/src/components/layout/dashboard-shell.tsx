@@ -4,21 +4,21 @@ import { useState, type ReactNode } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { 
-  Bell, 
   Home,
-  User, 
   Menu,
   X,
   Compass,
   Heart,
   Settings,
-  ShieldCheck
+  ShieldCheck,
+  Search
 } from 'lucide-react';
 import Image from 'next/image';
 import { SearchInput } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
-import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { CommandCenter } from './command-center';
+import { UserMenu } from './user-menu';
+import { SentinelNotifications } from './sentinel-notifications';
 
 const navItems = [
   { href: '/dashboard', label: 'My Finds', icon: Compass },
@@ -57,19 +57,19 @@ export function DashboardShell({ children, profile }: { children: ReactNode, pro
           </div>
         )}
         {/* Navigation Bar */}
-        <header className="glass-pill sticky top-6 z-40 flex items-center justify-between px-6 py-3 shadow-2xl">
+        <header className="glass-pill sticky top-6 z-40 flex items-center justify-between px-6 py-2.5 shadow-2xl">
           <div className="flex items-center gap-8">
             <Link href="/" className="flex items-center gap-3">
-              <div className="relative h-10 w-10 overflow-hidden rounded-full border border-white/10 shadow-lg shadow-primary/10">
+              <div className="relative h-9 w-9 overflow-hidden rounded-full border border-white/10 shadow-lg shadow-primary/10 transition-transform hover:scale-105">
                 <Image 
                   src="/applogo.png" 
                   alt="Kaziradar Logo"
-                  width={40}
-                  height={40}
+                  width={36}
+                  height={36}
                   className="h-full w-full object-cover"
                 />
               </div>
-              <span className="hidden text-xl font-bold tracking-tight md:block">Kaziradar</span>
+              <span className="hidden text-lg font-bold tracking-tight md:block">Kaziradar</span>
             </Link>
 
             <nav className="hidden items-center gap-1 lg:flex">
@@ -80,7 +80,7 @@ export function DashboardShell({ children, profile }: { children: ReactNode, pro
                     key={label}
                     href={href}
                     className={cn(
-                      'flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium transition-all duration-300',
+                      'flex items-center gap-2 rounded-full px-4 py-1.5 text-sm font-medium transition-all duration-300',
                       active
                         ? 'bg-primary text-background shadow-md'
                         : 'text-muted hover:bg-white/5 hover:text-foreground',
@@ -94,8 +94,9 @@ export function DashboardShell({ children, profile }: { children: ReactNode, pro
             </nav>
           </div>
 
-          <div className="flex items-center gap-3">
-            <div className="hidden w-48 md:block lg:w-64">
+          <div className="flex items-center gap-2 md:gap-4">
+            {/* Desktop Search */}
+            <div className="hidden md:block w-48 lg:w-64">
               <div 
                 onClick={() => setIsCommandCenterOpen(true)}
                 className="cursor-pointer group"
@@ -103,39 +104,29 @@ export function DashboardShell({ children, profile }: { children: ReactNode, pro
                 <SearchInput 
                   placeholder="Ask me anything..." 
                   readOnly
-                  className="rounded-full bg-surface border-none pointer-events-none group-hover:bg-surface-hover transition-all" 
+                  className="rounded-full bg-surface border-none pointer-events-none group-hover:bg-surface-hover transition-all h-10" 
                 />
               </div>
             </div>
-            
-            <ThemeToggle className="hidden sm:flex" />
 
-            <button className="flex h-10 w-10 items-center justify-center rounded-full bg-surface text-muted transition-colors hover:text-foreground border border-border">
-              <Bell className="h-4 w-4" />
+            {/* Mobile Search Trigger */}
+            <button 
+              onClick={() => setIsCommandCenterOpen(true)}
+              className="md:hidden flex h-9 w-9 items-center justify-center rounded-full bg-surface text-muted hover:text-foreground border border-border"
+            >
+              <Search className="h-4 w-4" />
             </button>
+            
+            <div className="h-6 w-px bg-border mx-1 hidden sm:block" />
 
-            <div className="h-8 w-px bg-border mx-1 hidden sm:block" />
-
-            <Link href="/profile" className="flex items-center gap-2 rounded-2xl bg-surface border border-border pl-1.5 pr-4 py-1.5 transition-all hover:bg-surface-hover hover:border-primary/20 group relative overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-              <div className="relative h-8 w-8 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary group-hover:scale-105 transition-transform overflow-hidden shadow-sm">
-                {profile?.avatar_url ? (
-                  <Image src={profile.avatar_url} alt={profile.full_name || 'User'} width={32} height={32} className="h-full w-full object-cover" />
-                ) : (
-                  <User className="h-4 w-4" />
-                )}
-              </div>
-              <div className="hidden sm:flex flex-col items-start -space-y-0.5 relative z-10">
-                <span className="text-xs font-bold tracking-tight">{profile?.full_name?.split(' ')[0] || 'Scout'}</span>
-                <span className="text-[9px] font-bold text-muted/40 uppercase tracking-widest">{profile?.account_tier || 'Free'}</span>
-              </div>
-            </Link>
+            <SentinelNotifications />
+            <UserMenu profile={profile} />
 
             <button 
-              className="lg:hidden p-2 text-muted"
+              className="lg:hidden p-2 text-muted hover:text-primary transition-colors"
               onClick={() => setIsMobileOpen(!isMobileOpen)}
             >
-              {isMobileOpen ? <X /> : <Menu />}
+              {isMobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </button>
           </div>
         </header>

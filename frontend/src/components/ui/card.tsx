@@ -18,11 +18,11 @@ export function CardHeader({ className, ...props }: ComponentPropsWithoutRef<'di
 }
 
 export function CardTitle({ className, ...props }: ComponentPropsWithoutRef<'h3'>) {
-  return <h3 className={cn('text-xl font-bold leading-tight tracking-tight', className)} {...props} />;
+  return <h3 className={cn('text-lg font-bold leading-tight tracking-tight', className)} {...props} />;
 }
 
 export function CardDescription({ className, ...props }: ComponentPropsWithoutRef<'p'>) {
-  return <p className={cn('text-sm text-muted/80 leading-relaxed', className)} {...props} />;
+  return <p className={cn('text-xs text-muted/80 leading-relaxed', className)} {...props} />;
 }
 
 export function CardContent({ className, ...props }: ComponentPropsWithoutRef<'div'>) {

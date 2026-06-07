@@ -40,6 +40,7 @@ export interface UserProfile {
   scan_credits: number;
   onboarding_completed: boolean;
   created_at: string;
+  preferences?: Record<string, unknown> | null;
 }
 
 export class ApiError extends Error {

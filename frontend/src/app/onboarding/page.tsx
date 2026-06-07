@@ -73,34 +73,47 @@ function OnboardingContent() {
   };
 
   const completeOnboarding = async (plan: string) => {
-    setStep('processing');
-    
-    const { data: { user } } = await supabase.auth.getUser();
-
-    if (user) {
-      // User is already logged in, update their profile directly
-      const updateData: Record<string, string | boolean> = {
-        onboarding_completed: true
-      };
+    try {
+      setStep('processing');
       
-      // Only update role if it was selected in this flow
-      if (userData.role) {
-        updateData.onboarding_role = userData.role;
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      if (userError) throw userError;
+
+      if (user) {
+        // User is already logged in, update their profile directly
+        const updateData: Record<string, string | boolean> = {
+          onboarding_completed: true
+        };
+        
+        // Only update role if it was selected in this flow
+        if (userData.role) {
+          updateData.onboarding_role = userData.role;
+        }
+
+        const { error: updateError } = await supabase
+          .from('profiles')
+          .update(updateData)
+          .eq('id', user.id);
+        
+        if (updateError) throw updateError;
+        
+        router.push('/dashboard');
+      } else {
+        // Not logged in, proceed to signup with data
+        const params = new URLSearchParams({
+          role: userData.role,
+          plan: plan
+        });
+        router.push(`/signup?${params.toString()}`);
       }
-
-      await supabase
-        .from('profiles')
-        .update(updateData)
-        .eq('id', user.id);
-      
-      router.push('/dashboard');
-    } else {
-      // Not logged in, proceed to signup with data
-      const params = new URLSearchParams({
-        role: userData.role,
-        plan: plan
-      });
-      router.push(`/signup?${params.toString()}`);
+    } catch (err) {
+      console.error('Onboarding completion error:', err);
+      // Fallback to dashboard or signup even if update fails, to avoid "stuck" state
+      if (plan === 'free') {
+        router.push('/dashboard');
+      } else {
+        router.push('/signup');
+      }
     }
   };
 

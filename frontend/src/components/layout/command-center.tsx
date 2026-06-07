@@ -2,7 +2,8 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Bot, X, Send, Sparkles, Zap } from 'lucide-react';
+import { X, Send, Sparkles, Flame } from 'lucide-react';
+import Image from 'next/image';
 import { cn } from '@/lib/utils';
 
 interface Message {
@@ -103,8 +104,8 @@ export function CommandCenter({ isOpen, onClose, onSearch }: CommandCenterProps)
             {/* Header */}
             <div className="flex items-center justify-between border-b border-white/5 bg-primary/5 px-6 py-4">
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary/10 text-primary">
-                  <Bot className="h-6 w-6" />
+                <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary/10 text-primary overflow-hidden border border-primary/20">
+                  <Image src="/applogo.png" alt="Scout" width={40} height={40} className="object-cover" />
                 </div>
                 <div>
                   <h3 className="text-sm font-bold tracking-tight">Intelligence Scout</h3>
@@ -199,7 +200,7 @@ export function CommandCenter({ isOpen, onClose, onSearch }: CommandCenterProps)
                   Natural Language
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <Zap className="h-3 w-3" />
+                  <Flame className="h-3 w-3" />
                   Realtime Search
                 </div>
               </div>

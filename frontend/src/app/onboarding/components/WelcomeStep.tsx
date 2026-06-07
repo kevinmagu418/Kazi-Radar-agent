@@ -1,8 +1,9 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Bot, Sparkles, ArrowRight } from 'lucide-react';
+import { Sparkles, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import Image from 'next/image';
 
 interface WelcomeStepProps {
   onNext: () => void;
@@ -17,9 +18,15 @@ export function WelcomeStep({ onNext }: WelcomeStepProps) {
       className="max-w-md w-full text-center space-y-8"
     >
       <div className="flex justify-center">
-        <div className="relative h-24 w-24 rounded-3xl bg-primary/10 flex items-center justify-center border border-primary/20 glow-soft">
-          <Bot className="h-12 w-12 text-primary animate-pulse-slow" />
-          <div className="absolute -top-2 -right-2">
+        <div className="relative h-24 w-24 rounded-[2rem] overflow-hidden border border-primary/20 shadow-2xl glow-soft">
+          <Image 
+            src="/applogo.png" 
+            alt="KaziRadar" 
+            width={96} 
+            height={96} 
+            className="h-full w-full object-cover"
+          />
+          <div className="absolute -top-2 -right-2 z-10">
             <Sparkles className="h-6 w-6 text-amber-400" />
           </div>
         </div>

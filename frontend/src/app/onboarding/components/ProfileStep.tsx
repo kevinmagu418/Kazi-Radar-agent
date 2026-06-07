@@ -22,7 +22,15 @@ export function ProfileStep({ onNext }: { onNext: () => void }) {
           .select('*')
           .eq('id', user.id)
           .single();
-        setProfile(data);
+        if (data) {
+          setProfile(data);
+        } else {
+          // Fallback if profile doesn't exist yet
+          setProfile({ id: user.id, full_name: '', username: '', bio: '', location: '', avatar_url: null });
+        }
+      } else {
+        // Default empty profile for guest onboarding
+        setProfile({ id: 'guest', full_name: '', username: '', bio: '', location: '', avatar_url: null });
       }
       setLoading(false);
     }

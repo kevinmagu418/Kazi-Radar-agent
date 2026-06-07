@@ -12,7 +12,6 @@ import {
   CheckCircle2,
   AlertCircle,
   ExternalLink,
-  Bot,
   Star,
   Clock,
   MapPin,
@@ -29,8 +28,10 @@ import { api, Opportunity, UserProfile } from '@/lib/api';
 import { cn } from '@/lib/utils';
 
 import { createClient } from '@/lib/supabase/client';
+import { SentinelPopUp } from '@/components/layout/sentinel-popup';
 
 const sectorOptions = ['', 'tech', 'agriculture', 'fintech', 'grants'];
+
 const typeOptions = [
   { id: '', label: 'Everything' },
   { id: 'job', label: 'Careers' },
@@ -53,6 +54,8 @@ export default function DashboardPage() {
   const [typeFilter, setTypeFilter] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [isScanModalOpen, setIsScanModalOpen] = useState(false);
+  const [isSentinelPopUpOpen, setIsSentinelPopUpOpen] = useState(false);
+  const [isSentinelDismissed, setIsSentinelDismissed] = useState(false);
   const [selectedCats, setSelectedCats] = useState<string[]>(['tech']);
   const [selectedGoals, setSelectedGoals] = useState<string[]>(['jobs']);
   const [error, setError] = useState<string | null>(null);
@@ -63,6 +66,18 @@ export default function DashboardPage() {
   const [searchQuery, setSearchQuery] = useState('');
 
   const supabase = useMemo(() => createClient(), []);
+
+  // Pop-up logic: Trigger after 1 minute for free users
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      // Check if user is free tier and hasn't dismissed it yet
+      if (profile && profile.account_tier === 'free' && !isSentinelDismissed) {
+        setIsSentinelPopUpOpen(true);
+      }
+    }, 60000); // 1 minute
+
+    return () => clearTimeout(timer);
+  }, [profile, isSentinelDismissed]);
 
   // Listen for global search events from Command Center
   useEffect(() => {
@@ -261,14 +276,14 @@ export default function DashboardPage() {
       <section className="relative overflow-hidden rounded-[2.5rem] bg-surface border border-border p-8 md:p-12 shadow-sm">
         <div className="relative z-10 flex flex-col gap-8 md:flex-row md:items-center md:justify-between">
           <div className="space-y-4 max-w-xl">
-            <div className="flex items-center gap-2 text-primary font-semibold text-sm uppercase tracking-widest">
+            <div className="flex items-center gap-2 text-primary font-semibold text-[11px] uppercase tracking-widest">
               <Sparkles className="h-4 w-4" />
               <span>Live Updates</span>
             </div>
-            <h1 className="text-4xl font-bold tracking-tight text-foreground md:text-5xl">
+            <h1 className="text-2xl font-bold tracking-tight text-foreground md:text-3xl">
               Hi! I&apos;ve found <span className="text-primary">{filteredOpportunities.length}</span> new things for you.
             </h1>
-            <p className="text-lg text-muted/80 leading-relaxed">
+            <p className="text-sm text-muted/80 leading-relaxed">
               I&apos;m constantly scanning the web for the best jobs, grants, and entrepreneurial opportunities that match your interests.
             </p>
             <div className="flex flex-wrap gap-3 pt-2">
@@ -303,13 +318,13 @@ export default function DashboardPage() {
       {/* Quick Filters */}
       <section className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between px-2">
         <div className="flex flex-wrap items-center gap-2">
-          <span className="text-sm font-medium text-muted mr-2">I&apos;m looking for</span>
+          <span className="text-xs font-medium text-muted mr-2">I&apos;m looking for</span>
           {typeOptions.map((opt) => (
             <button
               key={opt.id}
               onClick={() => handleTypeFilterChange(opt.id)}
               className={cn(
-                "px-5 py-2 rounded-full text-sm font-medium transition-all duration-300",
+                "px-5 py-1.5 rounded-full text-xs font-medium transition-all duration-300",
                 typeFilter === opt.id
                   ? "bg-primary text-background shadow-lg shadow-primary/20"
                   : "bg-surface text-muted hover:text-foreground hover:bg-surface-hover border border-border"
@@ -318,11 +333,11 @@ export default function DashboardPage() {
               {opt.label}
             </button>
           ))}
-          <span className="text-sm font-medium text-muted mx-2">in</span>
+          <span className="text-xs font-medium text-muted mx-2">in</span>
           <select
             value={sectorFilter}
             onChange={(e) => handleSectorFilterChange(e.target.value)}
-            className="bg-surface text-foreground text-sm font-medium rounded-full px-4 py-2 border border-border focus:ring-2 focus:ring-primary/20 cursor-pointer"
+            className="bg-surface text-foreground text-xs font-medium rounded-full px-4 py-1.5 border border-border focus:ring-2 focus:ring-primary/20 cursor-pointer"
           >
             {sectorOptions.map(opt => (
               <option key={opt} value={opt}>{opt || 'All Categories'}</option>
@@ -360,12 +375,12 @@ export default function DashboardPage() {
       <div className="min-h-[400px]">
         {isLoading ? (
           <div className="flex h-96 flex-col items-center justify-center gap-6 animate-pulse">
-            <div className="h-20 w-20 rounded-full bg-primary/10 flex items-center justify-center">
-              <Bot className="h-10 w-10 text-primary animate-bounce" />
+            <div className="h-20 w-20 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden border border-primary/20">
+              <Image src="/applogo.png" alt="Scout" width={80} height={80} className="object-cover" />
             </div>
             <div className="space-y-2 text-center">
-              <h3 className="text-xl font-bold">Checking the web...</h3>
-              <p className="text-muted">I&apos;ll be done in just a second!</p>
+              <h3 className="text-lg font-bold">Checking the web...</h3>
+              <p className="text-sm text-muted">I&apos;ll be done in just a second!</p>
             </div>
           </div>
         ) : filteredOpportunities.length === 0 ? (
@@ -373,8 +388,8 @@ export default function DashboardPage() {
             <div className="h-20 w-20 rounded-full bg-muted/10 flex items-center justify-center mb-6">
               <Search className="h-10 w-10 text-muted opacity-40" />
             </div>
-            <h3 className="text-2xl font-bold">Nothing found just yet</h3>
-            <p className="text-muted mt-2 max-w-sm mx-auto">
+            <h3 className="text-xl font-bold">Nothing found just yet</h3>
+            <p className="text-sm text-muted mt-2 max-w-sm mx-auto">
               I couldn&apos;t find any signals matching &quot;{searchQuery || 'your criteria'}&quot;. 
               Try a broader term or reset your filters.
             </p>
@@ -424,38 +439,38 @@ export default function DashboardPage() {
                       </div>
 
                       <div className="space-y-3">
-                        <h4 className="text-xl font-bold group-hover:text-primary transition-colors leading-tight">
+                        <h4 className="text-lg font-bold group-hover:text-primary transition-colors leading-tight">
                           {opp.title}
                         </h4>
-                        <div className="flex flex-wrap gap-4 text-xs text-muted font-medium">
+                        <div className="flex flex-wrap gap-4 text-[10px] text-muted font-medium">
                           <div className="flex items-center gap-1.5">
-                            <MapPin className="h-3.5 w-3.5 text-primary" />
+                            <MapPin className="h-3 w-3 text-primary" />
                             {opp.location || 'Remote'}
                           </div>
                           <div className="flex items-center gap-1.5">
-                            <Clock className="h-3.5 w-3.5 text-primary" />
+                            <Clock className="h-3 w-3 text-primary" />
                             Fresh
                           </div>
                           <div className="flex items-center gap-1.5">
-                            <Globe className="h-3.5 w-3.5 text-primary" />
+                            <Globe className="h-3 w-3 text-primary" />
                             {getHostLabel(opp.original_url)}
                           </div>
                         </div>
                       </div>
 
                       {opp.description && (
-                        <p className="text-sm text-muted/70 line-clamp-3 leading-relaxed">
+                        <p className="text-xs text-muted/70 line-clamp-3 leading-relaxed">
                           {opp.description}
                         </p>
                       )}
 
                       {opp.ai_explanation && (
                         <div className="p-4 rounded-2xl bg-primary/5 border border-primary/10 space-y-2">
-                          <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-primary">
-                            <Bot className="h-3 w-3" />
+                          <div className="flex items-center gap-2 text-[9px] font-bold uppercase tracking-widest text-primary">
+                            <Sparkles className="h-3 w-3" />
                             AI Insight
                           </div>
-                          <p className="text-xs text-foreground/80 leading-relaxed italic">
+                          <p className="text-[10px] text-foreground/80 leading-relaxed italic">
                             &ldquo;{opp.ai_explanation}&rdquo;
                           </p>
                         </div>
@@ -503,7 +518,9 @@ export default function DashboardPage() {
             <div className="flex flex-col items-center justify-center py-12 text-center gap-6">
               <div className="relative">
                 <div className="h-24 w-24 animate-spin rounded-full border-4 border-primary/10 border-t-primary" />
-                <Bot className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-8 w-8 text-primary animate-pulse" />
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-10 w-10 rounded-xl overflow-hidden border border-primary/20">
+                  <Image src="/applogo.png" alt="Scout" width={40} height={40} className="object-cover" />
+                </div>
               </div>
               <div className="space-y-2">
                 <h3 className="text-2xl font-bold italic">&quot;On it! I&apos;m checking everywhere...&quot;</h3>
@@ -577,6 +594,14 @@ export default function DashboardPage() {
           )}
         </div>
       </Modal>
+
+      <SentinelPopUp 
+        isOpen={isSentinelPopUpOpen} 
+        onClose={() => {
+          setIsSentinelPopUpOpen(false);
+          setIsSentinelDismissed(true);
+        }} 
+      />
     </div>
   );
 }

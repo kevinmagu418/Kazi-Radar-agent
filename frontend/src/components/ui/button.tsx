@@ -3,7 +3,7 @@
 import type { ButtonHTMLAttributes, ReactNode } from 'react';
 import { cn } from '@/lib/utils';
 
-type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'soft';
+type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'soft' | 'outline';
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   children: ReactNode;
@@ -20,12 +20,14 @@ const variants: Record<ButtonVariant, string> = {
     'text-muted hover:text-foreground hover:bg-surface',
   soft:
     'bg-primary/10 text-primary hover:bg-primary/20 border border-primary/10',
+  outline:
+    'bg-transparent text-primary border-2 border-primary hover:bg-primary hover:text-background shadow-lg shadow-primary/5',
 };
 
 const sizes: Record<'sm' | 'md' | 'lg', string> = {
-  sm: 'px-4 py-2 text-xs',
-  md: 'px-6 py-3 text-sm',
-  lg: 'px-8 py-4 text-base font-semibold',
+  sm: 'px-4 py-2 text-[10px]',
+  md: 'px-6 py-3 text-xs',
+  lg: 'px-8 py-4 text-sm font-semibold',
 };
 
 export function Button({ 
