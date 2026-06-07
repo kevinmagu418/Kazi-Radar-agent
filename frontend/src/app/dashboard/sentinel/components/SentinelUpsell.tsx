@@ -198,7 +198,7 @@ export function SentinelUpsell() {
           {/* Abstract Image Base Overlay */}
           <div className="absolute inset-0 z-[-1] opacity-20">
              <Image 
-              src="/sentinel-scout.png" 
+              src="/sentinelnew.png" 
               alt="Background" 
               fill
               className="object-cover grayscale contrast-125"

@@ -35,7 +35,7 @@ export function SentinelPopUp({ isOpen, onClose }: SentinelPopUpProps) {
                 {/* Visual Side (Avatar) */}
                 <div className="relative h-20 w-20 shrink-0 rounded-2xl overflow-hidden bg-primary/10 border border-primary/20">
                   <Image 
-                    src="/sentinel-scout.png" 
+                    src="/sentinelnew.png" 
                     alt="Sentinel" 
                     fill
                     className="object-cover grayscale-[0.2] contrast-[1.1]"
