@@ -193,6 +193,7 @@ BEGIN
     INSERT INTO public.profiles (
         id, 
         full_name, 
+        avatar_url,
         onboarding_role, 
         account_tier,
         onboarding_completed,
@@ -200,12 +201,16 @@ BEGIN
     )
     VALUES (
         NEW.id,
-        COALESCE(NEW.raw_user_meta_data->>'full_name', ''),
+        COALESCE(NEW.raw_user_meta_data->>'full_name', NEW.raw_user_meta_data->>'name', ''),
+        NEW.raw_user_meta_data->>'avatar_url',
         role_enum,
         plan_enum,
         (role_val IS NOT NULL AND plan_val IS NOT NULL),
         30
-    );
+    )
+    ON CONFLICT (id) DO UPDATE SET
+        full_name = EXCLUDED.full_name,
+        avatar_url = COALESCE(public.profiles.avatar_url, EXCLUDED.avatar_url);
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;

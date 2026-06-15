@@ -111,3 +111,20 @@ cd frontend && npm run dev
 
 ---
 *Kaziradar: Street-smart AI intelligence for elite opportunity discovery.*
+
+## 📓 Release Notes - June 15, 2026
+
+### 🌍 Global Geographical Expansion
+*   **Expanded Database**: Upgraded the country database from 20 to 150+ countries in `frontend/src/lib/countries.ts`.
+*   **Advanced Search**: Implemented a real-time, filtered country picker in the profile form to replace the static dropdown, enabling faster navigation across global markets.
+
+### 🧠 Mission-Driven AI Personalization
+*   **Personalization Context Injection**: The AI "Scout" now incorporates the user's **Mission Statement** (Venture Mission) and **Interests** directly into the extraction prompt.
+*   **Dynamic Relevance Scoring**: Opportunity `relevanceScore` is now calculated based on alignment with the user's specific mission.
+*   **Intelligent Fallback**: Refined AI logic to handle empty profiles, ensuring high-quality general discovery while incentivizing personalization for better accuracy.
+*   **Personalized Explanations**: Improved AI-generated insights for paid tiers to explain exactly why an opportunity aligns with the user's specific venture goals.
+
+### 🎨 UI & UX Improvements
+*   **Scout Efficiency Visuals**: Enhanced the profile efficiency section with a dynamic avatar/placeholder system and polished backdrop effects.
+*   **Gamified Progress**: Balanced the profile completion logic to reflect the importance of the Mission Statement in driving engine accuracy.
+*   **Aesthetic Refinement**: Applied modern glassmorphism and subtle animations to the profile management interface.

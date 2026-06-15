@@ -83,6 +83,14 @@ router.post("/scan", async (req, res) => {
       return res.status(500).json({ error: "Intelligence terminal synchronization unavailable. Please contact support." });
     }
 
+    // ENFORCEMENT: Run subscription expiry check before processing scan
+    try {
+      await supabase.rpc('handle_subscription_expiry');
+    } catch (err) {
+      logger.warn(`Subscription expiry check failed: ${err}`);
+      // Continue anyway, it's a fallback check
+    }
+
     // Check user tier and credits in Supabase
     const { data: profile, error: profileError } = await supabase
       .from('profiles')

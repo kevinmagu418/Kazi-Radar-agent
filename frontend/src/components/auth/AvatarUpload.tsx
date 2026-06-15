@@ -27,7 +27,7 @@ export function AvatarUpload({ uid, url, onUpload, className }: AvatarUploadProp
 
       const file = event.target.files[0];
       const fileExt = file.name.split('.').pop();
-      const filePath = `${uid}-${Math.random()}.${fileExt}`;
+      const filePath = `${uid}/${Math.random()}.${fileExt}`;
 
       // Upload the file to Supabase Storage
       const { error: uploadError } = await supabase.storage
@@ -42,6 +42,16 @@ export function AvatarUpload({ uid, url, onUpload, className }: AvatarUploadProp
       const { data: { publicUrl } } = supabase.storage
         .from('avatars')
         .getPublicUrl(filePath);
+
+      // Persist to profile record immediately
+      const { error: updateError } = await supabase
+        .from('profiles')
+        .update({ avatar_url: publicUrl })
+        .eq('id', uid);
+
+      if (updateError) {
+        console.error('Error updating profile:', updateError);
+      }
 
       onUpload(publicUrl);
     } catch (error) {

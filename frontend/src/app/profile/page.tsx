@@ -17,7 +17,8 @@ import {
   Search,
   Hash,
   ArrowRight,
-  LogOut
+  LogOut,
+  User
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Badge } from '@/components/ui/badge';
@@ -31,11 +32,20 @@ import { AvatarUpload } from '@/components/auth/AvatarUpload';
 
 import { UserProfile } from '@/lib/api';
 
+const SUGGESTED_TAGS = [
+  'Full-stack Development', 'UI/UX Design', 'Product Management', 'SaaS', 
+  'Blockchain', 'Artificial Intelligence', 'Cybersecurity', 'Fintech',
+  'Remote Work', 'Early-stage Startup', 'VC Funding', 'Open Source',
+  'DevOps', 'Cloud Architecture', 'Mobile Apps', 'Data Science'
+];
+
 export default function ProfilePage() {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [subscription, setSubscription] = useState<{ id: string; current_period_end: string; cancel_at_period_end: boolean } | null>(null);
   const [loading, setLoading] = useState(true);
   const [isUpdating, setIsUpdating] = useState(false);
+  const [tagInput, setTagInput] = useState('');
+  const [showTagSuggestions, setShowTagSuggestions] = useState(false);
   
   const supabase = createClient();
   const router = useRouter();
@@ -53,7 +63,11 @@ export default function ProfilePage() {
         .single();
       
       if (profileData) {
-        setProfile(profileData);
+        setProfile({
+          ...profileData,
+          auth_method: user.app_metadata.provider || 'email',
+          email: user.email
+        });
       }
 
       // Load Subscription
@@ -102,6 +116,35 @@ export default function ProfilePage() {
     setIsUpdating(false);
   };
 
+  const handleUpdateSensitivity = async (val: number[]) => {
+    if (!profile) return;
+    const newVal = val[0];
+    setProfile({ ...profile, sensitivity: newVal }); // Optimistic update
+    
+    const { error } = await supabase
+      .from('profiles')
+      .update({ sensitivity: newVal })
+      .eq('id', profile.id);
+    
+    if (error) {
+      alert('Failed to update sensitivity: ' + error.message);
+    }
+  };
+
+  const handleToggleEmailAlerts = async (enabled: boolean) => {
+    if (!profile) return;
+    setProfile({ ...profile, email_alerts: enabled }); // Optimistic
+    
+    const { error } = await supabase
+      .from('profiles')
+      .update({ email_alerts: enabled })
+      .eq('id', profile.id);
+    
+    if (error) {
+      alert('Failed to update email settings: ' + error.message);
+    }
+  };
+
   const handleCancelSubscription = async () => {
     if (!subscription || !confirm('Are you sure you want to cancel your subscription? You will keep your benefits until the end of the period.')) return;
     
@@ -117,6 +160,45 @@ export default function ProfilePage() {
       alert('Failed to cancel subscription: ' + error.message);
     }
     setLoading(false);
+  };
+
+  const handleChangePassword = async () => {
+    if (profile?.auth_method !== 'email') {
+      alert('Password management is handled by your social provider (Google/GitHub).');
+      return;
+    }
+    
+    const { error } = await supabase.auth.resetPasswordForEmail(profile.email || '', {
+      redirectTo: `${window.location.origin}/reset-password`,
+    });
+
+    if (error) {
+      alert('Error: ' + error.message);
+    } else {
+      alert('A password reset link has been sent to your email.');
+    }
+  };
+
+  const handleDeactivateProfile = async () => {
+    const confirmed = confirm(
+      "WARNING: This will deactivate your scout profile and stop all active scanning. You will be signed out immediately. Continue?"
+    );
+
+    if (confirmed) {
+      setLoading(true);
+      const { error } = await supabase
+        .from('profiles')
+        .update({ status: 'deactivated' })
+        .eq('id', profile?.id);
+
+      if (!error) {
+        await supabase.auth.signOut();
+        router.push('/');
+      } else {
+        alert('Failed to deactivate profile: ' + error.message);
+      }
+      setLoading(false);
+    }
   };
 
   if (loading || !profile) return (
@@ -172,7 +254,9 @@ export default function ProfilePage() {
 
             <div className="shrink-0 hidden lg:block">
               <div className="h-24 w-24 rounded-3xl bg-primary/5 border border-primary/10 flex flex-col items-center justify-center gap-1">
-                <span className="text-2xl font-black text-primary">{profile?.scan_credits || 0}</span>
+                <span className="text-2xl font-black text-primary">
+                  {profile?.account_tier === 'free' ? (profile?.scan_credits || 0) : '∞'}
+                </span>
                 <span className="text-[9px] font-black uppercase tracking-widest text-muted/40 text-center px-2">Scan<br/>Credits</span>
               </div>
             </div>
@@ -235,12 +319,22 @@ export default function ProfilePage() {
                 </div>
               </div>
 
-              <div className="rounded-[2.5rem] bg-primary/5 border border-primary/10 p-8">
+              <div className="rounded-[2.5rem] bg-primary/5 border border-primary/10 p-8 relative overflow-hidden group">
+                <div className="absolute top-6 right-8 w-16 h-16 rounded-2xl bg-primary/10 border border-primary/20 overflow-hidden backdrop-blur-md transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3">
+                  {profile?.avatar_url ? (
+                    <img src={profile.avatar_url} alt="Scout Avatar" className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/20 to-primary/5">
+                      <User className="h-8 w-8 text-primary/40" />
+                    </div>
+                  )}
+                </div>
+
                 <h3 className="text-sm font-black uppercase tracking-widest text-primary mb-4 flex items-center gap-2">
                   <Flame className="h-4 w-4" />
                   Scout Efficiency
                 </h3>
-                <p className="text-xs text-muted/60 leading-relaxed mb-6">Your profile completion is at 85%. Add a detailed bio to improve matching accuracy.</p>
+                <p className="text-xs text-muted/60 leading-relaxed mb-6 max-w-[70%]">Your profile completion is at 85%. Add a detailed bio to improve matching accuracy.</p>
                 <div className="h-1.5 w-full bg-primary/10 rounded-full overflow-hidden">
                   <div className="h-full bg-primary w-[85%] rounded-full shadow-[0_0_10px_rgba(255,77,141,0.5)]" />
                 </div>
@@ -271,11 +365,70 @@ export default function ProfilePage() {
                       </button>
                     </div>
                   ))}
-                  <button className="flex items-center gap-2 px-4 py-2 rounded-xl bg-surface/50 border border-border/50 border-dashed text-xs font-bold text-muted/40 hover:text-primary hover:border-primary/50 transition-all">
-                    + Add Intel Tag
-                  </button>
                 </div>
                 
+                <div className="relative">
+                  <div className="flex gap-2">
+                    <input 
+                      type="text" 
+                      placeholder="Add custom intel tag..."
+                      className="flex-1 bg-surface/50 border border-border/50 rounded-xl px-4 py-2 text-xs font-bold outline-none focus:border-primary/50 transition-all"
+                      value={tagInput}
+                      onChange={(e) => {
+                        setTagInput(e.target.value);
+                        setShowTagSuggestions(true);
+                      }}
+                      onFocus={() => setShowTagSuggestions(true)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' && tagInput.trim()) {
+                          handleUpdateInterests([...(profile?.interests || []), tagInput.trim()]);
+                          setTagInput('');
+                        }
+                      }}
+                    />
+                    <Button 
+                      size="sm" 
+                      className="rounded-xl h-10 px-4"
+                      onClick={() => {
+                        if (tagInput.trim()) {
+                          handleUpdateInterests([...(profile?.interests || []), tagInput.trim()]);
+                          setTagInput('');
+                        }
+                      }}
+                    >
+                      Add
+                    </Button>
+                  </div>
+
+                  {showTagSuggestions && (
+                    <div className="absolute top-full left-0 right-0 mt-2 p-2 bg-surface border border-border/50 rounded-2xl shadow-2xl z-50 max-h-48 overflow-y-auto backdrop-blur-xl">
+                      <div className="p-2 text-[10px] font-black uppercase tracking-widest text-muted/40 border-b border-border/30 mb-2">
+                        Suggested Signals
+                      </div>
+                      <div className="flex flex-wrap gap-1.5">
+                        {SUGGESTED_TAGS.filter(tag => !profile?.interests?.includes(tag)).map(tag => (
+                          <button
+                            key={tag}
+                            className="px-3 py-1.5 rounded-lg bg-surface/50 border border-border/50 text-[10px] font-bold hover:border-primary/50 hover:text-primary transition-all"
+                            onClick={() => {
+                              handleUpdateInterests([...(profile?.interests || []), tag]);
+                              setShowTagSuggestions(false);
+                            }}
+                          >
+                            {tag}
+                          </button>
+                        ))}
+                      </div>
+                      <button 
+                        className="w-full mt-4 p-2 text-[9px] font-black uppercase tracking-widest text-muted/20 hover:text-muted/40 transition-colors"
+                        onClick={() => setShowTagSuggestions(false)}
+                      >
+                        Close Suggestions
+                      </button>
+                    </div>
+                  )}
+                </div>
+
                 {(!profile?.interests || profile.interests.length === 0) && (
                   <div className="p-8 rounded-[2rem] border border-border/30 border-dashed text-center space-y-4">
                     <div className="h-12 w-12 rounded-2xl bg-muted/5 flex items-center justify-center mx-auto">
@@ -313,9 +466,14 @@ export default function ProfilePage() {
                       <p className="text-sm font-bold">Match Sensitivity</p>
                       <p className="text-[10px] text-muted/40 uppercase font-bold tracking-wider">Signal strictness</p>
                     </div>
-                    <span className="text-xs font-black text-primary">75%</span>
+                    <span className="text-xs font-black text-primary">{profile?.sensitivity || 75}%</span>
                   </div>
-                  <Slider defaultValue={[75]} max={100} step={1} />
+                  <Slider 
+                    value={[profile?.sensitivity || 75]} 
+                    max={100} 
+                    step={1} 
+                    onValueChange={handleUpdateSensitivity}
+                  />
                 </div>
 
                 <div className="flex items-center justify-between">
@@ -323,7 +481,10 @@ export default function ProfilePage() {
                     <p className="text-sm font-bold">Email Alerts</p>
                     <p className="text-[10px] text-muted/40 uppercase font-bold tracking-wider">Intel delivery</p>
                   </div>
-                  <Switch defaultChecked />
+                  <Switch 
+                    checked={!!profile?.email_alerts} 
+                    onCheckedChange={handleToggleEmailAlerts}
+                  />
                 </div>
               </div>
             </div>
@@ -347,9 +508,12 @@ export default function ProfilePage() {
                   <p className="text-xl font-black text-primary capitalize">{profile?.account_tier || 'Free Trial'}</p>
                 </div>
                 <div className="p-6 rounded-[2rem] bg-surface/50 border border-border/50 text-left space-y-1">
-                  <p className="text-[10px] font-black uppercase tracking-widest text-muted/40">Status</p>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-muted/40">Expires In</p>
                   <p className="text-xl font-black text-foreground">
-                    {subscription ? (subscription.cancel_at_period_end ? 'Expiring' : 'Active') : 'Free'}
+                    {subscription?.current_period_end 
+                      ? `${Math.ceil((new Date(subscription.current_period_end).getTime() - Date.now()) / (1000 * 60 * 60 * 24))} Days`
+                      : 'N/A'
+                    }
                   </p>
                 </div>
               </div>
@@ -394,8 +558,18 @@ export default function ProfilePage() {
                 <p className="text-xs text-muted/40 font-bold uppercase tracking-widest">Protect your terminal</p>
               </div>
               <div className="space-y-4">
-                <Button variant="secondary" className="w-full h-12 rounded-xl font-bold text-sm justify-between px-6">
-                  Change Password
+                <Button 
+                  variant="secondary" 
+                  className="w-full h-12 rounded-xl font-bold text-sm justify-between px-6"
+                  onClick={handleChangePassword}
+                  disabled={profile.auth_method !== 'email'}
+                >
+                  <span className="flex items-center gap-2">
+                    Change Password
+                    {profile.auth_method !== 'email' && (
+                      <Badge tone="default" className="text-[9px] h-4 uppercase opacity-50">OAuth Managed</Badge>
+                    )}
+                  </span>
                   <ArrowRight className="h-4 w-4 opacity-30" />
                 </Button>
                 <Button variant="secondary" className="w-full h-12 rounded-xl font-bold text-sm justify-between px-6">
@@ -411,7 +585,11 @@ export default function ProfilePage() {
                 <p className="text-xs text-rose-500/40 font-bold uppercase tracking-widest">Permanent actions</p>
               </div>
               <div className="space-y-4">
-                <Button variant="ghost" className="w-full h-12 rounded-xl font-bold text-sm text-rose-500 hover:bg-rose-500/10 justify-between px-6">
+                <Button 
+                  variant="ghost" 
+                  className="w-full h-12 rounded-xl font-bold text-sm text-rose-500 hover:bg-rose-500/10 justify-between px-6"
+                  onClick={handleDeactivateProfile}
+                >
                   Deactivate Scout Profile
                   <Shield className="h-4 w-4 opacity-30" />
                 </Button>

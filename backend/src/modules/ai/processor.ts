@@ -45,8 +45,19 @@ const getPromptTemplate = (isPaid: boolean) => {
   - relevanceScore (number between 1-100)
   - proofLinks (array of strings, extract URLs that verify this opportunity)`;
 
+  const personalizationInstructions = `
+  IMPORTANT - Personalization Context:
+  The user has provided the following mission and interests:
+  Mission/Bio: {userBio}
+  Interests: {userInterests}
+
+  Use this context to:
+  1. Calculate the 'relevanceScore' based on alignment with their mission and interests. 
+     NOTE: If the mission/interests are "None provided", calculate the score based on the GENERAL high-value impact and quality of the opportunity for a standard seeker.
+  2. Prioritize opportunities that match their specific focus if provided.`;
+
   const paidInstructions = `
-  - explanation (string, provide a personalized 1-sentence explanation of why this is a high-value opportunity, focusing on the specific benefits for an innovator or seeker)`;
+  - explanation (string, provide a personalized 1-sentence explanation of why this specific opportunity aligns with the user's mission and interests)`;
 
   const outputFormat = `
   Output MUST be a JSON array of objects.
@@ -57,11 +68,11 @@ const getPromptTemplate = (isPaid: boolean) => {
   Output JSON:`;
 
   return PromptTemplate.fromTemplate(
-    `${baseInstructions}${isPaid ? paidInstructions : ""}${outputFormat}`
+    `${baseInstructions}${personalizationInstructions}${isPaid ? paidInstructions : ""}${outputFormat}`
   );
 };
 
-export const extractOpportunities = async (data: any, tier: string = "free") => {
+export const extractOpportunities = async (data: any, tier: string = "free", userContext: { bio?: string, interests?: string[] } = {}) => {
   try {
     const isPaid = tier !== "free";
     const model = isPaid ? model70b : model8b;
@@ -89,7 +100,11 @@ export const extractOpportunities = async (data: any, tier: string = "free") => 
       parser
     ]);
     
-    const result = await chain.invoke({ text: truncatedText });
+    const result = await chain.invoke({ 
+      text: truncatedText,
+      userBio: userContext.bio || "None provided",
+      userInterests: userContext.interests?.join(", ") || "None provided"
+    });
     
     return result as any[];
   } catch (error) {

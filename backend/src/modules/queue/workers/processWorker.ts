@@ -24,21 +24,28 @@ export const processWorker = new Worker(
       for (const record of rawRecords) {
         logger.info(`[ProcessWorker] Processing RawData: ${record._id}`);
         
-        // Find if this raw data was triggered by a specific user to determine tier
+        // Find if this raw data was triggered by a specific user to determine tier and context
         const userId = record.rawContent.userId;
         let tier = "free";
+        let userContext = {};
         
         if (userId && supabase) {
           const { data: profile } = await supabase
             .from('profiles')
-            .select('account_tier')
+            .select('account_tier, bio, interests')
             .eq('id', userId)
             .single();
-          if (profile) tier = profile.account_tier;
+          if (profile) {
+            tier = profile.account_tier;
+            userContext = {
+              bio: profile.bio,
+              interests: profile.interests
+            };
+          }
         }
 
         logger.info(`[ProcessWorker] Sending to AI Processor (${tier} tier): ${record.title}`);
-        const opportunities = await extractOpportunities(record.rawContent, tier);
+        const opportunities = await extractOpportunities(record.rawContent, tier, userContext);
         logger.info(`[ProcessWorker] AI extracted ${opportunities.length} opportunities`);
 
         if (Array.isArray(opportunities) && opportunities.length > 0) {

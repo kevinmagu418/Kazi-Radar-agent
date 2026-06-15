@@ -90,7 +90,26 @@ export default function DashboardPage() {
   }, []);
 
   const filteredOpportunities = useMemo(() => {
-    if (!searchQuery) return opportunities;
+    let results = opportunities;
+
+    // Apply Remote-Only Filter
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    if ((profile?.preferences as any)?.remote_only) {
+      results = results.filter(opp => 
+        !opp.location || 
+        opp.location.toLowerCase().includes('remote') || 
+        opp.location.toLowerCase().includes('global') ||
+        opp.location.toLowerCase().includes('anywhere') ||
+        opp.location.toLowerCase().includes('online')
+      );
+    }
+
+    // Apply Match Sensitivity Filter
+    if (profile?.sensitivity) {
+      results = results.filter(opp => opp.relevance_score >= (profile.sensitivity || 0));
+    }
+
+    if (!searchQuery) return results;
     
     // Intelligent keyword extraction
     const stopWords = ['find', 'me', 'show', 'any', 'the', 'a', 'an', 'are', 'there', 'some', 'looking', 'for', 'about', 'with'];
@@ -98,14 +117,14 @@ export default function DashboardPage() {
       .split(/[\s,]+/)
       .filter(word => word.length > 1 && !stopWords.includes(word));
 
-    if (keywords.length === 0) return opportunities;
+    if (keywords.length === 0) return results;
 
-    return opportunities.filter(opp => {
+    return results.filter(opp => {
       const targetText = `${opp.title} ${opp.description || ''} ${opp.category} ${opp.type} ${opp.location || ''}`.toLowerCase();
       // Match if at least one keyword is found (could be changed to 'every' for stricter matching)
       return keywords.some(keyword => targetText.includes(keyword));
     });
-  }, [opportunities, searchQuery]);
+  }, [opportunities, searchQuery, profile?.preferences]);
 
   const fetchProfile = useCallback(async () => {
     const { data: { user } } = await supabase.auth.getUser();

@@ -41,6 +41,10 @@ export interface UserProfile {
   onboarding_completed: boolean;
   created_at: string;
   preferences?: Record<string, unknown> | null;
+  sensitivity?: number;
+  email_alerts?: boolean;
+  auth_method?: string;
+  email?: string;
 }
 
 export class ApiError extends Error {
